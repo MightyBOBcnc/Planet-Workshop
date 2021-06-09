@@ -18,7 +18,7 @@ public class PropertyPanel : MonoBehaviour
 
     private void Start () {
         value = defaultValue;
-        maxDeltaPerTick = (valueMinMax.y - valueMinMax.x) * Time.fixedDeltaTime / 1f; // (value range) * (delta time) / (seconds for full deflection)
+        maxDeltaPerTick = (valueMinMax.y - valueMinMax.x) * Time.fixedDeltaTime / 3f; // (value range) * (delta time) / (seconds for full deflection)
         inputField.text = "" + value;
     }
 

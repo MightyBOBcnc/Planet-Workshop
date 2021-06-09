@@ -51,7 +51,7 @@ public class WorkshopManager : MonoBehaviour
 
         p.craters = new Crater[(int) numCratersPanel.GetValue ()];
         for(int i = 0; i < p.craters.Length; i++) {
-            p.craters[i] = new Crater (Random.onUnitSphere * p.radius, Mathf.Pow (Random.value, 3f) * craterMaxSizePanel.GetValue ());
+            p.craters[i] = new Crater (Random.onUnitSphere * p.radius, craterMaxSizePanel.GetValue ());
         }
 
         PlanetMaker.CreatePlanet (p);
@@ -79,8 +79,9 @@ public struct PlanetOptions {
 public struct Crater {
     public Vector3 position;
     public float size;
-    public Crater (Vector3 position, float size) {
+    public Crater (Vector3 position, float maxSize) {
         this.position = position;
-        this.size = size;
+        float v = Random.value;
+        this.size = maxSize * (0.112f * Mathf.Pow (1.61f, v) + 0.811f * Mathf.Pow (v, 5f));
     }
 }

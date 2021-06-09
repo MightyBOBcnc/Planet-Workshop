@@ -20,8 +20,6 @@ public class PlanetMaker : MonoBehaviour {
 
         instance.tex3d = CreateCraterMap (options);
 
-        return;
-
         for (byte i = 1; i <= 6; i++) {
             GameObject g = new GameObject ("Plane " + i);
             instance.StartCoroutine (CreatePlane (i, options, g));
@@ -32,7 +30,7 @@ public class PlanetMaker : MonoBehaviour {
     }
 
     public static Texture3D CreateCraterMap (PlanetOptions options) {
-        byte r = 16;
+        byte r = 64;
         Texture3D t = new Texture3D (r, r, r, TextureFormat.Alpha8, false);
 
         Color[] colours = new Color[(int) Mathf.Pow (r, 3)];
@@ -49,7 +47,7 @@ public class PlanetMaker : MonoBehaviour {
                     float wy = CraterMapCoordToWorldCoord (y / (float) r, options);
                     float wz = CraterMapCoordToWorldCoord (z / (float) r, options);
 
-                    colours[idx] = Color.black * -1 * craters (wx, wy, wz, options);
+                    colours[idx] = Color.black * (2f - craters (wx, wy, wz, options));
                 }
             }
         }
@@ -66,6 +64,15 @@ public class PlanetMaker : MonoBehaviour {
 
     public static float WorldCoordToCraterMapCoord (float x, PlanetOptions o) {
         return (x / (o.radius + o.noiseHeight)) / 2f + 0.5f;
+    }
+
+    public static float SampleCraterMap (float x, float y, float z, PlanetOptions o) {
+        float mx = WorldCoordToCraterMapCoord (x, o);
+        float my = WorldCoordToCraterMapCoord (y, o);
+        float mz = WorldCoordToCraterMapCoord (z, o);
+
+        return -3f * instance.tex3d.GetPixelBilinear (mx, my, mz).a;
+
     }
 
     public static IEnumerator CreatePlane (byte idx, PlanetOptions options, GameObject g) {
@@ -157,7 +164,9 @@ public class PlanetMaker : MonoBehaviour {
             Vector3 wp = g.transform.TransformPoint (vertices[i]);
             float a = 1f;
             //vertices[i] *= 1f + (2*a * per3d (wp.x, wp.y, wp.z, options) - a) / options.radius;
-            vertices[i] += WorldNoise (wp.x, wp.y, wp.z, options) * vertices[i].normalized * options.radius;
+            Vector3 norm = vertices[i].normalized;
+            vertices[i] += WorldNoise (wp.x, wp.y, wp.z, options) * norm * options.radius;
+            vertices[i] += SampleCraterMap (wp.x, wp.y, wp.z, options) * norm;
         }
 
         Mesh m = new Mesh ();
@@ -180,8 +189,8 @@ public class PlanetMaker : MonoBehaviour {
 
     public static Texture2D CreateTexture (PlanetOptions p) {
 
-        int xRes = 1024;
-        int yRes = 512;
+        int xRes = 512;
+        int yRes = 256;
 
         Texture2D t = new Texture2D (xRes, yRes);
         Color[] pixels = new Color[xRes * yRes];
@@ -260,7 +269,7 @@ public class PlanetMaker : MonoBehaviour {
                 sum += crater (p.craters[i], Mathf.Sqrt (d) * p.radius) / p.radius;
         }
 
-        sum -= crater (p.craters[0], 100f) * p.craters.Length;
+        //sum -= crater (p.craters[0], 100f) * p.craters.Length;
 
         return sum;
     }
