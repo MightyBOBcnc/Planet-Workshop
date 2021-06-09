@@ -2,28 +2,76 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class PlanetMaker {
+public class PlanetMaker : MonoBehaviour {
+
+    public static PlanetMaker instance;
+
+    public Texture3D tex3d;
 
     public static void CreatePlanet (PlanetOptions options) {
+
+        if (instance == null) {
+            instance = new GameObject ().AddComponent<PlanetMaker> ();
+        }
 
         GameObject planetParent = new GameObject ("PlanetParent");
 
         options.material.mainTexture = CreateTexture (options);
 
+        instance.tex3d = CreateCraterMap (options);
+
+        return;
+
         for (byte i = 1; i <= 6; i++) {
-            GameObject g = CreatePlane (i, options);
+            GameObject g = new GameObject ("Plane " + i);
+            instance.StartCoroutine (CreatePlane (i, options, g));
             g.transform.parent = planetParent.transform;
         }
 
         planetParent.transform.localScale = 1f / options.radius * Vector3.one;
     }
 
-    public static GameObject CreatePlane (byte idx, PlanetOptions options) {
+    public static Texture3D CreateCraterMap (PlanetOptions options) {
+        byte r = 16;
+        Texture3D t = new Texture3D (r, r, r, TextureFormat.Alpha8, false);
+
+        Color[] colours = new Color[(int) Mathf.Pow (r, 3)];
+
+        Debug.Log (CraterMapCoordToWorldCoord (0f, options) + "," + CraterMapCoordToWorldCoord (1f, options));
+
+        for(int z = 0; z < t.depth; z++) {
+            for(int y = 0; y < t.height; y++) {
+                for(int x = 0; x < t.width; x++) {
+                    int idx = x + (y * r) + (z * (r * r));
+                    //colours[idx] = Color.white * WorldNoise (x, y, z, options); // TESTING ONLY
+
+                    float wx = CraterMapCoordToWorldCoord (x / (float) r, options);
+                    float wy = CraterMapCoordToWorldCoord (y / (float) r, options);
+                    float wz = CraterMapCoordToWorldCoord (z / (float) r, options);
+
+                    colours[idx] = Color.black * -1 * craters (wx, wy, wz, options);
+                }
+            }
+        }
+
+        t.SetPixels (colours);
+        t.Apply ();
+
+        return t;
+    }
+
+    public static float CraterMapCoordToWorldCoord (float x, PlanetOptions o) {
+        return (2f * x - 1f) * (o.radius + o.noiseHeight);
+    }
+
+    public static float WorldCoordToCraterMapCoord (float x, PlanetOptions o) {
+        return (x / (o.radius + o.noiseHeight)) / 2f + 0.5f;
+    }
+
+    public static IEnumerator CreatePlane (byte idx, PlanetOptions options, GameObject g) {
 
         // IDX:
         // 1=top, 2=bottom, 3=left, 4=right, 5=back, 6=front;
-
-        GameObject g = new GameObject ("Plane " + idx);
 
         switch (idx) {
             case 0:
@@ -123,7 +171,11 @@ public static class PlanetMaker {
         g.AddComponent<MeshFilter> ().sharedMesh = m;
         g.AddComponent<MeshRenderer> ().material = options.material;
 
-        return g;
+        Debug.Log ("Done");
+
+        yield return null;
+
+        //return g;
     }
 
     public static Texture2D CreateTexture (PlanetOptions p) {
@@ -153,7 +205,7 @@ public static class PlanetMaker {
     }
 
     static float WorldNoise (float x, float y, float z, PlanetOptions p) {
-        return (per3d (x, y, z, p) - 0.25f * ridge3d (x, y, z, p)) * p.noiseHeight + craters (x, y, z, p) / 3f;
+        return (per3d (x, y, z, p) - 0.25f * ridge3d (x, y, z, p)) * p.noiseHeight;
     }
 
     static float WorldNoise (Vector3 x, PlanetOptions p) => WorldNoise (x.x, x.y, x.z, p);
@@ -207,6 +259,8 @@ public static class PlanetMaker {
             //if (d < Mathf.Pow (2f * p.craters[i].size, 2f))
                 sum += crater (p.craters[i], Mathf.Sqrt (d) * p.radius) / p.radius;
         }
+
+        sum -= crater (p.craters[0], 100f) * p.craters.Length;
 
         return sum;
     }

@@ -698,7 +698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultValue: 5
-  valueMinMax: {x: 1, y: 20}
+  valueMinMax: {x: 1, y: 100}
   slider: {fileID: 1105456909}
   inputField: {fileID: 387793522}
   integer: 1
@@ -6679,6 +6679,7 @@ MonoBehaviour:
   surfaceColour2: {fileID: 1090443212}
   colourBlendingPanel: {fileID: 1695144474}
   colourScalePanel: {fileID: 2112351448}
+  t3d: {fileID: 0}
 --- !u!4 &924155678
 Transform:
   m_ObjectHideFlags: 0

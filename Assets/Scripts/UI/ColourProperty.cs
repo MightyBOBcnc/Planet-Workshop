@@ -10,14 +10,19 @@ public class ColourProperty : MonoBehaviour
     public RawImage redBG, greenBG, blueBG;
     public Image colourPreview;
 
+    bool hasInitialised = false;
+
     float red, green, blue;
 
     private void Awake () {
-        red = 0; green = 0; blue = 0;
+        red = redSlider.value; green = greenSlider.value; blue = blueSlider.value;
     }
 
     private void Update () {
-        if(redSlider.value != red || greenSlider.value != green || blueSlider.value != blue) {
+        if(!hasInitialised || redSlider.value != red || greenSlider.value != green || blueSlider.value != blue) {
+
+            hasInitialised = true;
+
             red = redSlider.value; green = greenSlider.value; blue = blueSlider.value;
 
             Texture2D rbg = new Texture2D (256, 1);

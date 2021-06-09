@@ -25,6 +25,8 @@ public class WorkshopManager : MonoBehaviour
     public PropertyPanel colourBlendingPanel;
     public PropertyPanel colourScalePanel;
 
+    public Texture3D t3d;
+
     private void Start () {
         UpdatePlanet ();
     }
@@ -53,6 +55,7 @@ public class WorkshopManager : MonoBehaviour
         }
 
         PlanetMaker.CreatePlanet (p);
+        t3d = PlanetMaker.instance.tex3d;
     }
 }
 

@@ -1,0 +1,217 @@
+Using pre-set license
+Built from '2021.1/release' branch; Version is '2021.1.4f1 (4cd64a618c1b) revision 5035594'; Using compiler version '192528614'; Build Type 'Release'
+OS: 'Windows 10 Home; OS build 19042.804; Version 2009; 64bit' Language: 'en' Physical Memory: 16221 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 0
+
+ COMMAND LINE ARGUMENTS:
+X:\Programs\Unity\2021.1.4f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker0
+-projectPath
+X:/UnityProjects/Planet Workshop
+-logFile
+Logs/AssetImportWorker0.log
+-srvPort
+60843
+Successfully changed project path to: X:/UnityProjects/Planet Workshop
+X:/UnityProjects/Planet Workshop
+Using Asset Import Pipeline V2.
+Refreshing native plugins compatible for Editor in 71.25 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2021.1.4f1 (4cd64a618c1b)
+[Subsystems] Discovering subsystems at path X:/Programs/Unity/2021.1.4f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path X:/UnityProjects/Planet Workshop/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 2060 (ID=0x1f15)
+    Vendor:   NVIDIA
+    VRAM:     5980 MB
+    Driver:   27.21.14.5167
+Initialize mono
+Mono path[0] = 'X:/Programs/Unity/2021.1.4f1/Editor/Data/Managed'
+Mono path[1] = 'X:/Programs/Unity/2021.1.4f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
+Mono config path = 'X:/Programs/Unity/2021.1.4f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56740
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: X:/Programs/Unity/2021.1.4f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.001120 seconds.
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 74.85 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.022 seconds
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.002779 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.46 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.942 seconds
+Platform modules already initialized, skipping
+========================================================================
+Worker process is ready to serve import requests
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.06 seconds
+Refreshing native plugins compatible for Editor in 0.45 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2671 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 98.6 MB.
+System memory in use after: 98.8 MB.
+
+Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 3124.
+Total: 2.395400 ms (FindLiveObjects: 0.347300 ms CreateObjectMapping: 0.162300 ms MarkObjects: 1.762800 ms  DeleteObjects: 0.121700 ms)
+
+========================================================================
+Received Import Request.
+  path: Assets/Shaders/noise-simplex.shader
+  artifactKey: Guid(6f18e7d1426902b4394dc86004fac378) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Shaders/noise-simplex.shader using Guid(6f18e7d1426902b4394dc86004fac378) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9baff2f6a8a354fb96a37396aff0d1ca') in 0.050641 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000488 seconds.
+  path: Assets/Shaders
+  artifactKey: Guid(d91d6354bda33c749bed9d19f0c3e7cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Shaders using Guid(d91d6354bda33c749bed9d19f0c3e7cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aaf9cd153cf5bd4f728148518cbc33ac') in 0.007059 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 5.490347 seconds.
+  path: Assets/Shaders/noiseSimplex.cginc
+  artifactKey: Guid(a9a58b90e72f9b646b483eb8257c46b8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Shaders/noiseSimplex.cginc using Guid(a9a58b90e72f9b646b483eb8257c46b8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b3fc58aef229ece467d53a7b4b144876') in 0.011101 seconds 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.002742 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.48 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.833 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.47 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2665 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 98.5 MB.
+System memory in use after: 98.7 MB.
+
+Unloading 10 unused Assets to reduce memory usage. Loaded Objects now: 3127.
+Total: 1.968700 ms (FindLiveObjects: 0.213700 ms CreateObjectMapping: 0.140900 ms MarkObjects: 1.561800 ms  DeleteObjects: 0.051400 ms)
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.004084 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.49 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.968 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.68 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2665 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 98.6 MB.
+System memory in use after: 98.8 MB.
+
+Unloading 10 unused Assets to reduce memory usage. Loaded Objects now: 3130.
+Total: 2.291300 ms (FindLiveObjects: 0.279800 ms CreateObjectMapping: 0.242500 ms MarkObjects: 1.718100 ms  DeleteObjects: 0.049700 ms)
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.002732 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.70 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.829 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.45 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2665 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 98.6 MB.
+System memory in use after: 98.8 MB.
+
+Unloading 10 unused Assets to reduce memory usage. Loaded Objects now: 3133.
+Total: 2.203000 ms (FindLiveObjects: 0.201400 ms CreateObjectMapping: 0.105200 ms MarkObjects: 1.807400 ms  DeleteObjects: 0.088200 ms)
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.003026 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.43 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.818 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.44 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2665 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 98.6 MB.
+System memory in use after: 98.8 MB.
+
+Unloading 10 unused Assets to reduce memory usage. Loaded Objects now: 3136.
+Total: 2.096700 ms (FindLiveObjects: 0.243200 ms CreateObjectMapping: 0.114500 ms MarkObjects: 1.698500 ms  DeleteObjects: 0.039800 ms)
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.002987 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.43 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.800 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.43 ms, found 1 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 2665 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 98.6 MB.
+System memory in use after: 98.8 MB.
+
+Unloading 10 unused Assets to reduce memory usage. Loaded Objects now: 3139.
+Total: 2.182700 ms (FindLiveObjects: 0.211200 ms CreateObjectMapping: 0.102100 ms MarkObjects: 1.829100 ms  DeleteObjects: 0.039500 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 2912.613753 seconds.
+  path: Assets/Scripts/Compute
+  artifactKey: Guid(5a6d8621ad246a4458af18977224c205) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Compute using Guid(5a6d8621ad246a4458af18977224c205) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd086b67ded84181db49cbbf5dae48d0d') in 0.034863 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 11.231840 seconds.
+  path: Assets/Scripts/Compute/PlanetGenerator.compute
+  artifactKey: Guid(90e5bf32e7c094041a4a793af4a9bdde) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Compute/PlanetGenerator.compute using Guid(90e5bf32e7c094041a4a793af4a9bdde) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b70f8c9265ef24cbcdb56a2ecbc0bedf') in 0.032225 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 281.980923 seconds.
+  path: Assets/Scripts/Compute/PlanetGenerator.compute
+  artifactKey: Guid(90e5bf32e7c094041a4a793af4a9bdde) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Compute/PlanetGenerator.compute using Guid(90e5bf32e7c094041a4a793af4a9bdde) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'acf69576bc460977595679604211d355') in 0.008378 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 157584.316338 seconds.
+  path: Assets/Scripts/Compute/PlanetGenerator.compute
+  artifactKey: Guid(90e5bf32e7c094041a4a793af4a9bdde) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Compute/PlanetGenerator.compute using Guid(90e5bf32e7c094041a4a793af4a9bdde) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'cb08d4f3e8729a6a6d7d26820a0c9cba') in 0.086529 seconds 
+========================================================================
+Received Import Request.
+  Time since last request: 859.566175 seconds.
+  path: Assets/Scripts/Compute/PlanetGenerator.compute
+  artifactKey: Guid(90e5bf32e7c094041a4a793af4a9bdde) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/Compute/PlanetGenerator.compute using Guid(90e5bf32e7c094041a4a793af4a9bdde) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ac3bcbd39b00932ab089834b1030c91c') in 0.094574 seconds 
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
