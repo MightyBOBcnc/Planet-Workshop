@@ -4,31 +4,80 @@ using UnityEngine;
 
 public class PlanetMaker : MonoBehaviour {
 
-    public static PlanetMaker instance;
+    public ComputeShader craterShader;
 
     public Texture3D tex3d;
 
-    public static void CreatePlanet (PlanetOptions options) {
-
-        if (instance == null) {
-            instance = new GameObject ().AddComponent<PlanetMaker> ();
-        }
+    public void CreatePlanet (PlanetOptions options) {
 
         GameObject planetParent = new GameObject ("PlanetParent");
 
         options.material.mainTexture = CreateTexture (options);
 
-        instance.tex3d = CreateCraterMap (options);
+        tex3d = CreateCraterMap (options);
 
         for (byte i = 1; i <= 6; i++) {
             GameObject g = new GameObject ("Plane " + i);
-            instance.StartCoroutine (CreatePlane (i, options, g));
+            StartCoroutine (CreatePlane (i, options, g));
             g.transform.parent = planetParent.transform;
         }
 
         planetParent.transform.localScale = 1f / options.radius * Vector3.one;
     }
 
+    public Texture3D CreateCraterMap (PlanetOptions options) {
+
+        int r = 512;
+
+        Texture3D t = new Texture3D (r, r, r, TextureFormat.Alpha8, false);
+        //RenderTexture t = new RenderTexture (r, r, r, RenderTextureFormat.Depth);
+        //t.enableRandomWrite = true;
+
+        float[] values = new float[(int) Mathf.Pow (r, 3)];
+        ComputeBuffer buffer = new ComputeBuffer (values.Length, sizeof (float));
+        craterShader.SetBuffer (0, "Result", buffer);
+
+        Vector4[] craterVectors = new Vector4[options.craters.Length];
+        for (int i = 0; i < craterVectors.Length; i++) {
+            craterVectors[i] = (Vector4) options.craters[i].position + new Vector4 (0, 0, 0, 1) * options.craters[i].size;
+        }
+
+        craterShader.SetVectorArray ("_Craters", craterVectors);
+
+        craterShader.SetInt ("_NumCraters", options.craters.Length);
+        craterShader.SetInt ("_R", r);
+        craterShader.SetFloat ("_SizeParameter", options.radius + options.noiseHeight);
+        craterShader.SetTexture (0, "Result", t);
+
+        int numGroups = Mathf.CeilToInt (r / 8f); // texture size in one dimension divided by the numthreads bit from the shader
+
+        craterShader.Dispatch (0, numGroups, numGroups, numGroups);
+
+        buffer.GetData (values);
+        buffer.Release ();
+
+        Color[] colours = new Color[(int) Mathf.Pow (r, 3)];
+
+        for (int z = 0; z < t.depth; z++) {
+            for (int y = 0; y < t.height; y++) {
+                for (int x = 0; x < t.width; x++) {
+                    int idx = x + (y * r) + (z * (r * r));
+                    colours[idx] = Color.black * values[idx];
+                    //print (idx + ", " + values[idx]);
+                }
+            }
+        }
+
+        print ("Min: " + Mathf.Min (values));
+        print ("Max: " + Mathf.Max (values));
+
+        t.SetPixels (colours);
+        t.Apply ();
+
+        return t;
+    }
+
+    /*
     public static Texture3D CreateCraterMap (PlanetOptions options) {
         byte r = 64;
         Texture3D t = new Texture3D (r, r, r, TextureFormat.Alpha8, false);
@@ -57,6 +106,7 @@ public class PlanetMaker : MonoBehaviour {
 
         return t;
     }
+    */
 
     public static float CraterMapCoordToWorldCoord (float x, PlanetOptions o) {
         return (2f * x - 1f) * (o.radius + o.noiseHeight);
@@ -66,16 +116,16 @@ public class PlanetMaker : MonoBehaviour {
         return (x / (o.radius + o.noiseHeight)) / 2f + 0.5f;
     }
 
-    public static float SampleCraterMap (float x, float y, float z, PlanetOptions o) {
+    public float SampleCraterMap (float x, float y, float z, PlanetOptions o) {
         float mx = WorldCoordToCraterMapCoord (x, o);
         float my = WorldCoordToCraterMapCoord (y, o);
         float mz = WorldCoordToCraterMapCoord (z, o);
 
-        return -3f * instance.tex3d.GetPixelBilinear (mx, my, mz).a;
+        return -3f * tex3d.GetPixelBilinear (mx, my, mz).a;
 
     }
 
-    public static IEnumerator CreatePlane (byte idx, PlanetOptions options, GameObject g) {
+    public IEnumerator CreatePlane (byte idx, PlanetOptions options, GameObject g) {
 
         // IDX:
         // 1=top, 2=bottom, 3=left, 4=right, 5=back, 6=front;
@@ -180,7 +230,7 @@ public class PlanetMaker : MonoBehaviour {
         g.AddComponent<MeshFilter> ().sharedMesh = m;
         g.AddComponent<MeshRenderer> ().material = options.material;
 
-        Debug.Log ("Done");
+        //Debug.Log ("Done");
 
         yield return null;
 

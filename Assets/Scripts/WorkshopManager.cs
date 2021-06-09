@@ -25,8 +25,6 @@ public class WorkshopManager : MonoBehaviour
     public PropertyPanel colourBlendingPanel;
     public PropertyPanel colourScalePanel;
 
-    public Texture3D t3d;
-
     private void Start () {
         UpdatePlanet ();
     }
@@ -54,8 +52,7 @@ public class WorkshopManager : MonoBehaviour
             p.craters[i] = new Crater (Random.onUnitSphere * p.radius, craterMaxSizePanel.GetValue ());
         }
 
-        PlanetMaker.CreatePlanet (p);
-        t3d = PlanetMaker.instance.tex3d;
+        GetComponent<PlanetMaker> ().CreatePlanet (p);
     }
 }
 
@@ -82,6 +79,6 @@ public struct Crater {
     public Crater (Vector3 position, float maxSize) {
         this.position = position;
         float v = Random.value;
-        this.size = maxSize * (0.112f * Mathf.Pow (1.61f, v) + 0.811f * Mathf.Pow (v, 5f));
+        this.size = maxSize * v;// (0.112f * Mathf.Pow (1.61f, v) + 0.811f * Mathf.Pow (v, 5f));
     }
 }

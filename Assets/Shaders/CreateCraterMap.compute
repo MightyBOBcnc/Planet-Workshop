@@ -2,13 +2,16 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CreateCraterMap
 
-RWTexture3D<float4> Result;
+//RWTexture3D<float4> Result;
+RWStructuredBuffer<float> Result;
 
 float4 _Craters[2048]; // (x, y, z, size)
+
 int _NumCraters;
 float _SizeParameter; // radius + noiseheight or smth
+int _R;
 
-/*
+
 float seed = 0;
 
 // https://forum.unity.com/threads/generate-random-float-between-0-and-1-in-shader.610810/#post-4089295
@@ -25,7 +28,6 @@ float randNum() {
 float3 RandomOnUnitSphere() {
 	return normalize(float3(randNum(), randNum(), randNum()));
 }
-*/
 
 float SmoothMin(float a, float b, float k) {
     return -1.0f / k * log(exp(-a * k) + exp(-b * k));
@@ -35,8 +37,9 @@ float coordSingle(float x) {
     return (2.0f * x - 1.0f) * _SizeParameter;
 }
 
+// TAKES IN PIXEL COORDINATES UNLIKE THE C# IMPLEMENTATION
 float3 mapCoordToWorldCoord(float3 mapCoord) {
-    return float3(coordSingle(mapCoord[0]), coordSingle(mapCoord[1]), coordSingle(mapCoord[2]));
+    return float3(coordSingle(mapCoord[0] / _R), coordSingle(mapCoord[1] / _R), coordSingle(mapCoord[2] / _R));
 }
 
 float crater(int idx, int dist) {
@@ -54,8 +57,10 @@ float craters(float3 worldPos) {
 
     for (int i = 0; i < _NumCraters; i++) {
         float dist = distance(worldPos, float3(_Craters[i][0], _Craters[i][1], _Craters[i][2]));
-        sum += crater(i, dist);
+        sum += crater(i, dist * _SizeParameter) / _SizeParameter;
     }
+
+    //sum -= crater(0, 100000.0f) * _NumCraters;
 
     return sum;
 }
@@ -65,7 +70,12 @@ void CreateCraterMap(uint3 id : SV_DispatchThreadID)
 {
     float3 worldPos = mapCoordToWorldCoord(id);
     float craterValue = craters(worldPos);
-    Result[id] = float4(0, 0, 0, 2.0f - craterValue);
+    //Result[id] = float4(0, 0, 0, (randNum() + 1.0f) / 2.0f);
+    //Result[id] = float4(0, 0, 0, 2.0f - craterValue); // for a texture
+    int idx = id.x + id.y * _R + id.z * _R * _R;
+    //Result[idx] = 1.0f - (craterValue + 0.4160269f) / (0.4160269f - 0.286524f);
+    Result[idx] = 2.0f - craterValue;
+    //Result[idx] = (randNum() + 1.0f) / 2.0f - 0.45f;
 }
 
 /* ORIGINAL C# SOURCE - CREATECRATERMAP

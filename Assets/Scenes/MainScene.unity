@@ -6649,6 +6649,7 @@ GameObject:
   m_Component:
   - component: {fileID: 924155678}
   - component: {fileID: 924155677}
+  - component: {fileID: 924155679}
   m_Layer: 0
   m_Name: Handler
   m_TagString: Untagged
@@ -6679,7 +6680,6 @@ MonoBehaviour:
   surfaceColour2: {fileID: 1090443212}
   colourBlendingPanel: {fileID: 1695144474}
   colourScalePanel: {fileID: 2112351448}
-  t3d: {fileID: 0}
 --- !u!4 &924155678
 Transform:
   m_ObjectHideFlags: 0
@@ -6694,6 +6694,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &924155679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 924155676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81012520a79a7bc4eb24bf04a59e9f02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  craterShader: {fileID: 7200000, guid: a7a289422d3941f42821798b1dae97c7, type: 3}
+  tex3d: {fileID: 0}
 --- !u!1 &930679707
 GameObject:
   m_ObjectHideFlags: 0
