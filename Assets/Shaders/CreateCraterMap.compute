@@ -1,0 +1,138 @@
+
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CreateCraterMap
+
+RWTexture3D<float4> Result;
+
+float4 _Craters[2048]; // (x, y, z, size)
+int _NumCraters;
+float _SizeParameter; // radius + noiseheight or smth
+
+/*
+float seed = 0;
+
+// https://forum.unity.com/threads/generate-random-float-between-0-and-1-in-shader.610810/#post-4089295
+float random(float2 uv)
+{
+	return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453123);
+}
+
+float randNum() {
+	seed += random(float2(-seed, seed));
+	return random(float2(seed, -seed * 3281.52819));
+}
+
+float3 RandomOnUnitSphere() {
+	return normalize(float3(randNum(), randNum(), randNum()));
+}
+*/
+
+float SmoothMin(float a, float b, float k) {
+    return -1.0f / k * log(exp(-a * k) + exp(-b * k));
+}
+
+float coordSingle(float x) {
+    return (2.0f * x - 1.0f) * _SizeParameter;
+}
+
+float3 mapCoordToWorldCoord(float3 mapCoord) {
+    return float3(coordSingle(mapCoord[0]), coordSingle(mapCoord[1]), coordSingle(mapCoord[2]));
+}
+
+float crater(int idx, int dist) {
+    float4 c = _Craters[idx];
+    float parabola = (1.0f / c[3] * dist * dist - c[3]) * 0.5f;
+    float ridge = c[3] * c[3] / (1.0f + dist * dist);
+    float floor = -0.1f;
+    float S = 5.0f; // smoothing parameter
+    float P = 0.008f; // peak parameter
+    return SmoothMin(SmoothMin(ridge, parabola, S), floor, -S) + P * ridge;
+}
+
+float craters(float3 worldPos) {
+    float sum = 0.0f;
+
+    for (int i = 0; i < _NumCraters; i++) {
+        float dist = distance(worldPos, float3(_Craters[i][0], _Craters[i][1], _Craters[i][2]));
+        sum += crater(i, dist);
+    }
+
+    return sum;
+}
+
+[numthreads(8,8,8)]
+void CreateCraterMap(uint3 id : SV_DispatchThreadID)
+{
+    float3 worldPos = mapCoordToWorldCoord(id);
+    float craterValue = craters(worldPos);
+    Result[id] = float4(0, 0, 0, 2.0f - craterValue);
+}
+
+/* ORIGINAL C# SOURCE - CREATECRATERMAP
+
+public static Texture3D CreateCraterMap (PlanetOptions options) {
+    byte r = 64;
+    Texture3D t = new Texture3D (r, r, r, TextureFormat.Alpha8, false);
+
+    Color[] colours = new Color[(int) Mathf.Pow (r, 3)];
+
+    Debug.Log (CraterMapCoordToWorldCoord (0f, options) + "," + CraterMapCoordToWorldCoord (1f, options));
+
+    for(int z = 0; z < t.depth; z++) {
+        for(int y = 0; y < t.height; y++) {
+            for(int x = 0; x < t.width; x++) {
+                int idx = x + (y * r) + (z * (r * r));
+                //colours[idx] = Color.white * WorldNoise (x, y, z, options); // TESTING ONLY
+
+                float wx = CraterMapCoordToWorldCoord (x / (float) r, options);
+                float wy = CraterMapCoordToWorldCoord (y / (float) r, options);
+                float wz = CraterMapCoordToWorldCoord (z / (float) r, options);
+
+                colours[idx] = Color.black * (2f - craters (wx, wy, wz, options));
+            }
+        }
+    }
+
+    t.SetPixels (colours);
+    t.Apply ();
+
+    return t;
+}
+
+ */
+
+/* ORIGINAL C# SOURCE - CRATERS, CRATER, SMOOTHMIN and MAP TRANSFORMATIONS
+
+static float craters (float x, float y, float z, PlanetOptions p) {
+    float sum = 0f;
+
+    for(int i = 0; i < p.craters.Length; i++) {
+        float d = Vector3.SqrMagnitude (new Vector3 (x, y, z) - p.craters[i].position);
+        //if (d < Mathf.Pow (2f * p.craters[i].size, 2f))
+            sum += crater (p.craters[i], Mathf.Sqrt (d) * p.radius) / p.radius;
+    }
+
+    //sum -= crater (p.craters[0], 100f) * p.craters.Length;
+
+    return sum;
+}
+
+static float crater (Crater c, float dist) {
+    float parabola = (1 / c.size * dist * dist - c.size) * 0.5f;
+    float ridge = c.size * c.size / (1f + dist * dist);
+    float floor = -0.1f;
+    float S = 5f; // smoothing parameter
+    float P = 0.008f; // peak parameter
+    return SmoothMin (SmoothMin (ridge, parabola, S), floor, -S) + P * ridge;
+}
+
+// based on https://iquilezles.org/www/articles/smin/smin.htm
+static float SmoothMin (float a, float b, float k) {
+    return -1f / k * Mathf.Log (Mathf.Exp (-a * k) + Mathf.Exp (-b * k));
+}
+
+public static float CraterMapCoordToWorldCoord (float x, PlanetOptions o) {
+    return (2f * x - 1f) * (o.radius + o.noiseHeight);
+}
+
+*/
