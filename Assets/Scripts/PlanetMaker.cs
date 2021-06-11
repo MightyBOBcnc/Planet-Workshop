@@ -26,10 +26,12 @@ public class PlanetMaker : MonoBehaviour {
     }
 
     public Texture3D CreateCraterMap (PlanetOptions options) {
+    //public float[,,] CreateCraterMap (PlanetOptions options) {
 
-        int r = 512;
+        int r = 256;
 
         Texture3D t = new Texture3D (r, r, r, TextureFormat.Alpha8, false);
+        //float[,,] t = new float[r, r, r];
         //RenderTexture t = new RenderTexture (r, r, r, RenderTextureFormat.Depth);
         //t.enableRandomWrite = true;
 
@@ -47,7 +49,7 @@ public class PlanetMaker : MonoBehaviour {
         craterShader.SetInt ("_NumCraters", options.craters.Length);
         craterShader.SetInt ("_R", r);
         craterShader.SetFloat ("_SizeParameter", options.radius + options.noiseHeight);
-        craterShader.SetTexture (0, "Result", t);
+        //craterShader.SetTexture (0, "Result", t);
 
         int numGroups = Mathf.CeilToInt (r / 8f); // texture size in one dimension divided by the numthreads bit from the shader
 
@@ -58,18 +60,21 @@ public class PlanetMaker : MonoBehaviour {
 
         Color[] colours = new Color[(int) Mathf.Pow (r, 3)];
 
+        float min = Mathf.Min (values);
+        float max = Mathf.Max (values);
+
+        print ("Min: " + min);
+        print ("Max: " + max);
+
         for (int z = 0; z < t.depth; z++) {
             for (int y = 0; y < t.height; y++) {
                 for (int x = 0; x < t.width; x++) {
                     int idx = x + (y * r) + (z * (r * r));
-                    colours[idx] = Color.black * values[idx];
+                    colours[idx] = Color.black * Map(values[idx], min, max, 0f, 1f);
                     //print (idx + ", " + values[idx]);
                 }
             }
         }
-
-        print ("Min: " + Mathf.Min (values));
-        print ("Max: " + Mathf.Max (values));
 
         t.SetPixels (colours);
         t.Apply ();
@@ -216,7 +221,7 @@ public class PlanetMaker : MonoBehaviour {
             //vertices[i] *= 1f + (2*a * per3d (wp.x, wp.y, wp.z, options) - a) / options.radius;
             Vector3 norm = vertices[i].normalized;
             vertices[i] += WorldNoise (wp.x, wp.y, wp.z, options) * norm * options.radius;
-            vertices[i] += SampleCraterMap (wp.x, wp.y, wp.z, options) * norm;
+            vertices[i] += SampleCraterMap (wp.x, wp.y, wp.z, options) * norm * 0.013f * options.radius;
         }
 
         Mesh m = new Mesh ();
@@ -340,4 +345,9 @@ public class PlanetMaker : MonoBehaviour {
 
     static public float CalcSignedCentralAngle (Vector3 dir1, Vector3 dir2, Vector3 normal) // https://forum.unity.com/threads/is-vector3-signedangle-working-as-intended.694105/#post-5546026
         => Mathf.Rad2Deg * Mathf.Atan2 (Vector3.Dot (Vector3.Cross (dir1, dir2), normal), Vector3.Dot (dir1, dir2));
+
+    // https://forum.unity.com/threads/mapping-or-scaling-values-to-a-new-range.180090/#post-2241099
+    public static float Map (float x, float in_min, float in_max, float out_min, float out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
 }

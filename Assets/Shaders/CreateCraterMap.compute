@@ -46,10 +46,11 @@ float crater(int idx, int dist) {
     float4 c = _Craters[idx];
     float parabola = (1.0f / c[3] * dist * dist - c[3]) * 0.5f;
     float ridge = c[3] * c[3] / (1.0f + dist * dist);
-    float floor = -0.1f;
+    float ridge2 = SmoothMin(2.0f - pow(dist / c[3], 2), 0.0f, -15.0f);
+    float floor = -1.0f;
     float S = 5.0f; // smoothing parameter
     float P = 0.008f; // peak parameter
-    return SmoothMin(SmoothMin(ridge, parabola, S), floor, -S) + P * ridge;
+    return SmoothMin(SmoothMin(ridge2, parabola, S), floor, -S) + P * ridge;
 }
 
 float craters(float3 worldPos) {
@@ -60,7 +61,7 @@ float craters(float3 worldPos) {
         sum += crater(i, dist * _SizeParameter) / _SizeParameter;
     }
 
-    //sum -= crater(0, 100000.0f) * _NumCraters;
+    sum -= crater(0, _R / _NumCraters) * _NumCraters;
 
     return sum;
 }
@@ -74,7 +75,7 @@ void CreateCraterMap(uint3 id : SV_DispatchThreadID)
     //Result[id] = float4(0, 0, 0, 2.0f - craterValue); // for a texture
     int idx = id.x + id.y * _R + id.z * _R * _R;
     //Result[idx] = 1.0f - (craterValue + 0.4160269f) / (0.4160269f - 0.286524f);
-    Result[idx] = 2.0f - craterValue;
+    Result[idx] = 1.0f - craterValue;
     //Result[idx] = (randNum() + 1.0f) / 2.0f - 0.45f;
 }
 
