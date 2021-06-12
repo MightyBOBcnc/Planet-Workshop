@@ -1,4 +1,4 @@
-# Planet Workshop
+# :stars::ringed_planet: Planet Workshop :ringed_planet::stars:
 Create varied planets and moons, and export equirectangular terrain heightmaps and textures for use in other applications
 
 ## Overview
@@ -29,3 +29,4 @@ Heightmap and texture:<br>
 - [ ] Control over random seed to allow full functionality of save/load
 - [ ] Noise height curves for more varied surface
 - [ ] Latitude-based colouring (ice caps, etc)
+- [ ] Atmospheric and oceanic worlds
