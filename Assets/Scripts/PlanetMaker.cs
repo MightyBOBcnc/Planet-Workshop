@@ -273,9 +273,15 @@ public class PlanetMaker : MonoBehaviour {
     float FinalWorldHeight(float x, float y, float z, PlanetOptions p) {
         //return WorldNoise (x, y, z, p) * p.radius + SampleCraterMap (x, y, z, p) * 0.013f * p.radius;
 
+        float layerTotal = 0f;
+
+        for(int i = 0; i < p.layers.Length; i++) {
+            layerTotal += p.layers[i].Evaluate (x, y, z);
+        }
+
         float craters = SampleCraterMap (x, y, z, p) * 0.013f * p.radius;
 
-        return craters;
+        return layerTotal + craters;
     }
 
     float FinalWorldHeight (Vector3 x, PlanetOptions p) => FinalWorldHeight (x.x, x.y, x.z, p);

@@ -19,8 +19,8 @@ Heightmap and texture:<br>
 - [x] Varied surface colour
 - [x] Random crater generation
 - [x] Export heightmap and texture
-- [ ] Layering of noise and layering UI elements
-- [ ] Different types of noise (ridge, etc)
+- [x] Layering of noise and layering UI elements
+- [x] Different types of noise (ridge, etc)
 - [ ] Gradient colour picker for altitude
 - [ ] Mixing between randomised and altitude-based colour maps
 - [ ] Colour affected by crater presence
