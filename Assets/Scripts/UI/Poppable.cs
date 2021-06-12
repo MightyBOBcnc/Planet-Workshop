@@ -11,18 +11,31 @@ public class Poppable : MonoBehaviour {
     public void PopOut () {
         popContent.gameObject.SetActive (true);
         arrowIcon.rectTransform.eulerAngles = Vector3.zero;
-        LayoutRebuilder.ForceRebuildLayoutImmediate (popContent.transform.parent.parent.GetComponent<RectTransform> ());
+        Rebuild ();
     }
 
     public void PopIn() {
         popContent.gameObject.SetActive (false);
         arrowIcon.rectTransform.eulerAngles = Vector3.forward * 90f;
-        LayoutRebuilder.ForceRebuildLayoutImmediate (popContent.transform.parent.parent.GetComponent<RectTransform> ());
+        Rebuild ();
     }
 
     public void SmartPop () {
         // note: not the popcorn!
         if (popContent.gameObject.activeSelf) PopIn ();
         else PopOut ();
+    }
+
+    public void Rebuild () {
+        if (popContent.transform.parent.parent.name == "ManagementScrollContent") {
+            LayoutRebuilder.ForceRebuildLayoutImmediate (popContent.transform.parent.parent.GetComponent<RectTransform> ());
+        } else {
+            for (int i = 0; i < 2; i++) {
+                LayoutRebuilder.ForceRebuildLayoutImmediate (popContent.transform.parent.parent.GetComponent<RectTransform> ());
+                popContent.transform.parent.parent.parent.GetComponent<Poppable> ().Rebuild ();
+            }
+        }
+        //if (popContent.transform.parent.parent.parent.GetComponent<Poppable> () != null) popContent.transform.parent.parent.parent.GetComponent<Poppable> ().Rebuild ();
+        //LayoutRebuilder.ForceRebuildLayoutImmediate (GameObject.Find ("ManagementScrollContent").GetComponent<RectTransform> ());
     }
 }

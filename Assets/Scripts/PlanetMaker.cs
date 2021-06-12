@@ -14,7 +14,8 @@ public class PlanetMaker : MonoBehaviour {
 
         options.material.mainTexture = CreateTexture (options, options.texRes);
 
-        tex3d = CreateCraterMap (options);
+        if (options.craters.Length > 0)
+            tex3d = CreateCraterMap (options);
 
         for (byte i = 1; i <= 6; i++) {
             GameObject g = new GameObject ("Plane " + i);
@@ -48,7 +49,7 @@ public class PlanetMaker : MonoBehaviour {
 
         craterShader.SetInt ("_NumCraters", options.craters.Length);
         craterShader.SetInt ("_R", r);
-        craterShader.SetFloat ("_SizeParameter", options.radius + options.noiseHeight);
+        craterShader.SetFloat ("_SizeParameter", options.radius * 1.25f);
         //craterShader.SetTexture (0, "Result", t);
 
         int numGroups = Mathf.CeilToInt (r / 8f); // texture size in one dimension divided by the numthreads bit from the shader
@@ -115,52 +116,19 @@ public class PlanetMaker : MonoBehaviour {
         return t;
     }
 
-    /* This one is for the CPU
-    public static Texture3D CreateCraterMap (PlanetOptions options) {
-        byte r = 64;
-        Texture3D t = new Texture3D (r, r, r, TextureFormat.Alpha8, false);
+    public static float CraterMapCoordToWorldCoord (float x, PlanetOptions o) => (2f * x - 1f) * (o.radius * 1.25f);
 
-        Color[] colours = new Color[(int) Mathf.Pow (r, 3)];
-
-        Debug.Log (CraterMapCoordToWorldCoord (0f, options) + "," + CraterMapCoordToWorldCoord (1f, options));
-
-        for(int z = 0; z < t.depth; z++) {
-            for(int y = 0; y < t.height; y++) {
-                for(int x = 0; x < t.width; x++) {
-                    int idx = x + (y * r) + (z * (r * r));
-                    //colours[idx] = Color.white * WorldNoise (x, y, z, options); // TESTING ONLY
-
-                    float wx = CraterMapCoordToWorldCoord (x / (float) r, options);
-                    float wy = CraterMapCoordToWorldCoord (y / (float) r, options);
-                    float wz = CraterMapCoordToWorldCoord (z / (float) r, options);
-
-                    colours[idx] = Color.black * (2f - craters (wx, wy, wz, options));
-                }
-            }
-        }
-
-        t.SetPixels (colours);
-        t.Apply ();
-
-        return t;
-    }
-    */
-
-    public static float CraterMapCoordToWorldCoord (float x, PlanetOptions o) {
-        return (2f * x - 1f) * (o.radius + o.noiseHeight);
-    }
-
-    public static float WorldCoordToCraterMapCoord (float x, PlanetOptions o) {
-        return (x / (o.radius + o.noiseHeight)) / 2f + 0.5f;
-    }
+    public static float WorldCoordToCraterMapCoord (float x, PlanetOptions o) => (x / (o.radius * 1.25f)) / 2f + 0.5f;
 
     public float SampleCraterMap (float x, float y, float z, PlanetOptions o) {
+
+        if (o.craters.Length == 0) return 0f;
+
         float mx = WorldCoordToCraterMapCoord (x, o);
         float my = WorldCoordToCraterMapCoord (y, o);
         float mz = WorldCoordToCraterMapCoord (z, o);
 
         return -3f * tex3d.GetPixelBilinear (mx, my, mz).a;
-
     }
 
     public IEnumerator CreatePlane (byte idx, PlanetOptions options, GameObject g) {
@@ -292,7 +260,7 @@ public class PlanetMaker : MonoBehaviour {
                 Vector3 point3d = p.radius * new Vector3 (Mathf.Cos (longitude) * Mathf.Cos (latitude), Mathf.Sin (latitude), Mathf.Sin (longitude) * Mathf.Cos (latitude));
 
                 //pixels[x + y * xRes] = new Color (Mathf.Pow (point3d.x / p.radius / 2f + 0.5f, 7), Mathf.Pow (point3d.y / p.radius / 2f + 0.5f, 7), Mathf.Pow (point3d.z / p.radius / 2f + 0.5f, 7));
-                pixels[x + y * xRes] = (WorldNoise (point3d, p) / 2f + 0.5f) * Color.Lerp (p.col1, p.col2, (per3d (-point3d, p) / 2f / (p.colourBlending + 0.0001f)) + 0.5f);
+                pixels[x + y * xRes] = Color.Lerp (p.col1, p.col2, (scaleNoise (-point3d + Vector3.one * p.seed, p.colourScale * p.radius) / 2f / (p.colourBlending + 0.0001f)) + 0.5f);
             }
         }
 
@@ -302,17 +270,42 @@ public class PlanetMaker : MonoBehaviour {
         return t;
     }
 
-    static float WorldNoise (float x, float y, float z, PlanetOptions p) {
-        return (per3d (x, y, z, p) - 0.25f * ridge3d (x, y, z, p)) * p.noiseHeight;
-    }
-
-    static float WorldNoise (Vector3 x, PlanetOptions p) => WorldNoise (x.x, x.y, x.z, p);
-
     float FinalWorldHeight(float x, float y, float z, PlanetOptions p) {
-        return WorldNoise (x, y, z, p) * p.radius + SampleCraterMap (x, y, z, p) * 0.013f * p.radius;
+        //return WorldNoise (x, y, z, p) * p.radius + SampleCraterMap (x, y, z, p) * 0.013f * p.radius;
+
+        float craters = SampleCraterMap (x, y, z, p) * 0.013f * p.radius;
+
+        return craters;
     }
 
     float FinalWorldHeight (Vector3 x, PlanetOptions p) => FinalWorldHeight (x.x, x.y, x.z, p);
+
+    static float noisef (float x, float y) {
+        return Mathf.PerlinNoise (x, y);
+    }
+
+    static float noisef (float x, float y, float z) {
+        return Perlin.Noise (x, y, z);
+    }
+
+    static float scaleNoise (Vector3 p, float scale) => noisef (p.x / scale, p.y / scale, p.z / scale);
+
+    #region NOISE TRANSFORMATIONS
+    public static float TransformRidge (float x) => 1f - 2f * Mathf.Abs (x - 0.5f);
+    public static float TransformPlateau (float x) => (2f * x - 1f) / (1 + Mathf.Pow (2f * x - 1f, 2)) - 0.5f;
+    #endregion NOISE TRANSFORMATIONS
+
+    static public float CalcSignedCentralAngle (Vector3 dir1, Vector3 dir2, Vector3 normal) // https://forum.unity.com/threads/is-vector3-signedangle-working-as-intended.694105/#post-5546026
+        => Mathf.Rad2Deg * Mathf.Atan2 (Vector3.Dot (Vector3.Cross (dir1, dir2), normal), Vector3.Dot (dir1, dir2));
+
+    // https://forum.unity.com/threads/mapping-or-scaling-values-to-a-new-range.180090/#post-2241099
+    public static float Map (float x, float in_min, float in_max, float out_min, float out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+}
+
+// OBSOLETE
+/*
 
     static float per3d (float x, float y, float z, PlanetOptions p) {
         float div = p.noiseScale;
@@ -338,15 +331,6 @@ public class PlanetMaker : MonoBehaviour {
         return per3d (point.x, point.y, point.z, p);
     }
 
-    static float noisef (float x, float y) {
-        //return 
-        return Mathf.PerlinNoise (x, y);
-    }
-
-    static float ridgenoise (float x, float y) {
-        return 1f - Mathf.Abs (Mathf.PerlinNoise (x, y) * 2f - 1f);
-    }
-
     static float ridge3d (float x, float y, float z, PlanetOptions p) {
         x /= p.noiseScale;
         y /= p.noiseScale;
@@ -355,39 +339,71 @@ public class PlanetMaker : MonoBehaviour {
         return 1f - Mathf.Abs (2f * per3d (y, z, x, p) - 1f);
     }
 
-    static float craters (float x, float y, float z, PlanetOptions p) {
-        float sum = 0f;
-
-        for(int i = 0; i < p.craters.Length; i++) {
-            float d = Vector3.SqrMagnitude (new Vector3 (x, y, z) - p.craters[i].position);
-            //if (d < Mathf.Pow (2f * p.craters[i].size, 2f))
-                sum += crater (p.craters[i], Mathf.Sqrt (d) * p.radius) / p.radius;
-        }
-
-        //sum -= crater (p.craters[0], 100f) * p.craters.Length;
-
-        return sum;
+    static float WorldNoise (float x, float y, float z, PlanetOptions p) {
+        return (per3d (x, y, z, p) - 0.25f * ridge3d (x, y, z, p)) * p.noiseHeight;
     }
 
-    static float crater (Crater c, float dist) {
-        float parabola = (1 / c.size * dist * dist - c.size) * 0.5f;
-        float ridge = c.size * c.size / (1f + dist * dist);
-        float floor = -0.1f;
-        float S = 5f; // smoothing parameter
-        float P = 0.008f; // peak parameter
-        return SmoothMin (SmoothMin (ridge, parabola, S), floor, -S) + P * ridge;
+    static float WorldNoise (Vector3 x, PlanetOptions p) => WorldNoise (x.x, x.y, x.z, p);
+
+static float ridgenoise (float x, float y) {
+        return 1f - Mathf.Abs (Mathf.PerlinNoise (x, y) * 2f - 1f);
     }
 
-    // based on https://iquilezles.org/www/articles/smin/smin.htm
-    static float SmoothMin (float a, float b, float k) {
-        return -1f / k * Mathf.Log (Mathf.Exp (-a * k) + Mathf.Exp (-b * k));
+static float craters (float x, float y, float z, PlanetOptions p) {
+    float sum = 0f;
+
+    for(int i = 0; i < p.craters.Length; i++) {
+        float d = Vector3.SqrMagnitude (new Vector3 (x, y, z) - p.craters[i].position);
+        //if (d < Mathf.Pow (2f * p.craters[i].size, 2f))
+            sum += crater (p.craters[i], Mathf.Sqrt (d) * p.radius) / p.radius;
     }
 
-    static public float CalcSignedCentralAngle (Vector3 dir1, Vector3 dir2, Vector3 normal) // https://forum.unity.com/threads/is-vector3-signedangle-working-as-intended.694105/#post-5546026
-        => Mathf.Rad2Deg * Mathf.Atan2 (Vector3.Dot (Vector3.Cross (dir1, dir2), normal), Vector3.Dot (dir1, dir2));
+    //sum -= crater (p.craters[0], 100f) * p.craters.Length;
 
-    // https://forum.unity.com/threads/mapping-or-scaling-values-to-a-new-range.180090/#post-2241099
-    public static float Map (float x, float in_min, float in_max, float out_min, float out_max) {
-        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-    }
+    return sum;
 }
+static float crater (Crater c, float dist) {
+    float parabola = (1 / c.size * dist * dist - c.size) * 0.5f;
+    float ridge = c.size * c.size / (1f + dist * dist);
+    float floor = -0.1f;
+    float S = 5f; // smoothing parameter
+    float P = 0.008f; // peak parameter
+    return SmoothMin (SmoothMin (ridge, parabola, S), floor, -S) + P * ridge;
+}
+
+// based on https://iquilezles.org/www/articles/smin/smin.htm
+static float SmoothMin (float a, float b, float k) {
+    return -1f / k * Mathf.Log (Mathf.Exp (-a * k) + Mathf.Exp (-b * k));
+}
+*/
+
+/* This one is for the CPU
+public static Texture3D CreateCraterMap (PlanetOptions options) {
+    byte r = 64;
+    Texture3D t = new Texture3D (r, r, r, TextureFormat.Alpha8, false);
+
+    Color[] colours = new Color[(int) Mathf.Pow (r, 3)];
+
+    Debug.Log (CraterMapCoordToWorldCoord (0f, options) + "," + CraterMapCoordToWorldCoord (1f, options));
+
+    for(int z = 0; z < t.depth; z++) {
+        for(int y = 0; y < t.height; y++) {
+            for(int x = 0; x < t.width; x++) {
+                int idx = x + (y * r) + (z * (r * r));
+                //colours[idx] = Color.white * WorldNoise (x, y, z, options); // TESTING ONLY
+
+                float wx = CraterMapCoordToWorldCoord (x / (float) r, options);
+                float wy = CraterMapCoordToWorldCoord (y / (float) r, options);
+                float wz = CraterMapCoordToWorldCoord (z / (float) r, options);
+
+                colours[idx] = Color.black * (2f - craters (wx, wy, wz, options));
+            }
+        }
+    }
+
+    t.SetPixels (colours);
+    t.Apply ();
+
+    return t;
+}
+*/

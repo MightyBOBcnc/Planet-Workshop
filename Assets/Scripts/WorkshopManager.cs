@@ -13,9 +13,9 @@ public class WorkshopManager : MonoBehaviour
     public PropertyPanel radiusPanel;
 
     // NOISE
-    public PropertyPanel noiseScalePanel;
-    public PropertyPanel noiseHeightPanel;
-    public PropertyPanel noiseOctavesPanel;
+    public GameObject noiseLayerPanelPrefab;
+    public Transform noiseLayerPanelParent;
+    public List<NoiseLayerPanel> noiseLayerPanels;
 
     // CRATERS
     public PropertyPanel numCratersPanel;
@@ -52,9 +52,11 @@ public class WorkshopManager : MonoBehaviour
         p.resolution = 255;
         p.radius = radiusPanel.GetValue ();
         p.material = planetMaterial;
+        /*
         p.noiseScale = noiseScalePanel.GetValue ();
         p.noiseOctaves = Mathf.RoundToInt (noiseOctavesPanel.GetValue ());
         p.noiseHeight = noiseHeightPanel.GetValue ();
+        */
         p.seed = Random.Range (-10000f, 10000f);
 
         p.col1 = surfaceColour1.Colour;
@@ -83,6 +85,17 @@ public class WorkshopManager : MonoBehaviour
         File.WriteAllBytes (Application.dataPath + "/" + planetName.text + "_height.png", heightmapBytes);
         File.WriteAllBytes (Application.dataPath + "/" + planetName.text + "_texture.png", texBytes);
     }
+
+    public void AddNoiseLayer () {
+        GameObject g = Instantiate (noiseLayerPanelPrefab);
+        g.transform.parent = noiseLayerPanelParent;
+        noiseLayerPanels.Add (g.GetComponent<NoiseLayerPanel> ());
+    }
+
+    public void RemoveNoiseLayer (NoiseLayerPanel p) {
+        noiseLayerPanels.Remove (p);
+        Destroy (p.gameObject);
+    }
 }
 
 public class PlanetOptions {
@@ -90,9 +103,13 @@ public class PlanetOptions {
     public Material material;
 
     public float radius;
+
+    /*
     public float noiseScale;
     public int noiseOctaves;
     public float noiseHeight;
+    */
+
     public float seed;
 
     public Color col1, col2;
