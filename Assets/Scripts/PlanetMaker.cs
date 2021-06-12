@@ -12,7 +12,7 @@ public class PlanetMaker : MonoBehaviour {
 
         GameObject planetParent = new GameObject ("PlanetParent");
 
-        options.material.mainTexture = CreateTexture (options);
+        options.material.mainTexture = CreateTexture (options, options.texRes);
 
         tex3d = CreateCraterMap (options);
 
@@ -82,7 +82,40 @@ public class PlanetMaker : MonoBehaviour {
         return t;
     }
 
-    /*
+    public Texture2D CreateHeightmap (PlanetOptions options, int width) {
+        float[,] heights = new float[width, width / 2];
+        float max = float.MinValue;
+        float min = float.MaxValue;
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < width / 2; y++) {
+                float longitude = (-180 + x * 360f / width) * Mathf.Deg2Rad;
+                float latitude = (-90 + y * 180f / (width / 2)) * Mathf.Deg2Rad;
+
+                Vector3 point3d = options.radius * new Vector3 (Mathf.Cos (longitude) * Mathf.Cos (latitude), Mathf.Sin (latitude), Mathf.Sin (longitude) * Mathf.Cos (latitude));
+                float v = FinalWorldHeight (point3d, options);
+                heights[x, y] = v;
+                if (v < min) min = v;
+                if (v > max) max = v;
+            }
+        }
+
+        Texture2D t = new Texture2D (width, width / 2);
+        Color[] pixels = new Color[width * width / 2];
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < width / 2; y++) {
+                pixels[x + y * width] = Color.white * Mathf.InverseLerp (min, max, heights[x, y]) + new Color(0, 0, 0, 1);
+            }
+        }
+
+        t.SetPixels (pixels);
+        t.Apply ();
+        
+        return t;
+    }
+
+    /* This one is for the CPU
     public static Texture3D CreateCraterMap (PlanetOptions options) {
         byte r = 64;
         Texture3D t = new Texture3D (r, r, r, TextureFormat.Alpha8, false);
@@ -220,8 +253,9 @@ public class PlanetMaker : MonoBehaviour {
             float a = 1f;
             //vertices[i] *= 1f + (2*a * per3d (wp.x, wp.y, wp.z, options) - a) / options.radius;
             Vector3 norm = vertices[i].normalized;
-            vertices[i] += WorldNoise (wp.x, wp.y, wp.z, options) * norm * options.radius;
-            vertices[i] += SampleCraterMap (wp.x, wp.y, wp.z, options) * norm * 0.013f * options.radius;
+            //vertices[i] += WorldNoise (wp.x, wp.y, wp.z, options) * norm * options.radius;
+            //vertices[i] += SampleCraterMap (wp.x, wp.y, wp.z, options) * norm * 0.013f * options.radius;
+            vertices[i] += FinalWorldHeight (wp.x, wp.y, wp.z, options) * norm;
         }
 
         Mesh m = new Mesh ();
@@ -242,10 +276,10 @@ public class PlanetMaker : MonoBehaviour {
         //return g;
     }
 
-    public static Texture2D CreateTexture (PlanetOptions p) {
+    public static Texture2D CreateTexture (PlanetOptions p, int xRes) {
 
-        int xRes = 512;
-        int yRes = 256;
+        //int xRes = 512;
+        int yRes = xRes / 2; //256;
 
         Texture2D t = new Texture2D (xRes, yRes);
         Color[] pixels = new Color[xRes * yRes];
@@ -273,6 +307,12 @@ public class PlanetMaker : MonoBehaviour {
     }
 
     static float WorldNoise (Vector3 x, PlanetOptions p) => WorldNoise (x.x, x.y, x.z, p);
+
+    float FinalWorldHeight(float x, float y, float z, PlanetOptions p) {
+        return WorldNoise (x, y, z, p) * p.radius + SampleCraterMap (x, y, z, p) * 0.013f * p.radius;
+    }
+
+    float FinalWorldHeight (Vector3 x, PlanetOptions p) => FinalWorldHeight (x.x, x.y, x.z, p);
 
     static float per3d (float x, float y, float z, PlanetOptions p) {
         float div = p.noiseScale;

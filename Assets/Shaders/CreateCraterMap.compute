@@ -61,7 +61,7 @@ float craters(float3 worldPos) {
         sum += crater(i, dist * _SizeParameter) / _SizeParameter;
     }
 
-    sum -= crater(0, _R / _NumCraters) * _NumCraters;
+    //sum -= crater(0, _R / _NumCraters) * _NumCraters;
 
     return sum;
 }

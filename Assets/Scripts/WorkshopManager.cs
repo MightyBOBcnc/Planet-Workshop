@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WorkshopManager : MonoBehaviour
 {
@@ -25,6 +27,13 @@ public class WorkshopManager : MonoBehaviour
     public PropertyPanel colourBlendingPanel;
     public PropertyPanel colourScalePanel;
 
+    // EXPORT
+    public SimpleProperty heightmapResolutionPanel;
+    public SimpleProperty textureResolutionPanel;
+    public InputField planetName;
+
+    PlanetOptions p;
+
     private void Start () {
         UpdatePlanet ();
     }
@@ -33,7 +42,7 @@ public class WorkshopManager : MonoBehaviour
         if (GameObject.Find ("PlanetParent") != null)
             Destroy (GameObject.Find ("PlanetParent"));
 
-        PlanetOptions p = new PlanetOptions ();
+        p = new PlanetOptions ();
         p.resolution = 255;
         p.radius = radiusPanel.GetValue ();
         p.material = planetMaterial;
@@ -47,16 +56,30 @@ public class WorkshopManager : MonoBehaviour
         p.colourBlending = colourBlendingPanel.GetValue ();
         p.colourScale = colourScalePanel.GetValue ();
 
+        p.texRes = (int)textureResolutionPanel.GetValue ();
+        p.hgtRes = (int)heightmapResolutionPanel.GetValue ();
+
         p.craters = new Crater[(int) numCratersPanel.GetValue ()];
-        for(int i = 0; i < p.craters.Length; i++) {
+        for (int i = 0; i < p.craters.Length; i++) {
             p.craters[i] = new Crater (Random.onUnitSphere * p.radius, craterMaxSizePanel.GetValue ());
         }
 
         GetComponent<PlanetMaker> ().CreatePlanet (p);
     }
+
+    public void ExportPlanet () {
+        Texture2D heightmap = GetComponent<PlanetMaker> ().CreateHeightmap (p, p.hgtRes);
+        Texture2D tex = PlanetMaker.CreateTexture (p, p.texRes);
+
+        byte[] heightmapBytes = heightmap.EncodeToPNG ();
+        byte[] texBytes = tex.EncodeToPNG ();
+
+        File.WriteAllBytes (Application.dataPath + "/" + planetName.text + "_height.png", heightmapBytes);
+        File.WriteAllBytes (Application.dataPath + "/" + planetName.text + "_texture.png", texBytes);
+    }
 }
 
-public struct PlanetOptions {
+public class PlanetOptions {
     public int resolution;
     public Material material;
 
@@ -71,6 +94,9 @@ public struct PlanetOptions {
     public float colourScale;
 
     public Crater[] craters;
+
+    public int texRes;
+    public int hgtRes;
 }
 
 public struct Crater {
