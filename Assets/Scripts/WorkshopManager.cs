@@ -38,6 +38,12 @@ public class WorkshopManager : MonoBehaviour
         UpdatePlanet ();
     }
 
+    private void Update () {
+        // Keep these updating since we want any exports to reflect these values (not the values at last planet generation)
+        p.texRes = (int) textureResolutionPanel.GetValue ();
+        p.hgtRes = (int) heightmapResolutionPanel.GetValue ();
+    }
+
     public void UpdatePlanet () {
         if (GameObject.Find ("PlanetParent") != null)
             Destroy (GameObject.Find ("PlanetParent"));
