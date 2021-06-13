@@ -61,7 +61,8 @@ public class NoiseLayer {
     }
 
     float noisef (float x, float y, float z) {
-        float val = Perlin.Noise (x - seed, y, z + seed);
+        float p1 = Perlin.Noise (x - seed, y, z + seed);
+        float val = Perlin.Noise (x + p1, y - seed - p1, z + p1);
         switch (type) {
             case NoiseType.Ridge:
                 return PlanetMaker.TransformRidge (val);

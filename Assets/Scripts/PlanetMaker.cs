@@ -324,7 +324,7 @@ public class PlanetMaker : MonoBehaviour {
 
     static float noisef (float x, float y) => Mathf.PerlinNoise (x, y);
 
-    static float noisef (float x, float y, float z) => Perlin.Noise (x, y, z);
+    static float noisef (float x, float y, float z) => Perlin.Noise (x + Perlin.Noise(x, y, z), y + Perlin.Noise (x, y, z), z + Perlin.Noise (x, y, z));
 
     static float noisef (Vector3 v) => noisef (v.x, v.y, v.z);
 
