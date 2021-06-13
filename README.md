@@ -3,10 +3,10 @@ Create varied planets and moons, and export equirectangular terrain heightmaps a
 
 ## Overview
 Planet:<br>
-<img src="https://github.com/carlpilot/Planet-Workshop/blob/main/Assets/plateau%20world.png" width=350><br>
+<img src="https://github.com/carlpilot/Planet-Workshop/blob/main/Promotional/warpedworld.png" width=350><br>
 Heightmap and texture:<br>
-<img src="https://github.com/carlpilot/Planet-Workshop/blob/main/Assets/plateau%20world_height.png" width=500>
-<img src="https://github.com/carlpilot/Planet-Workshop/blob/main/Assets/plateau%20world_texture.png" width=400>
+<img src="https://github.com/carlpilot/Planet-Workshop/blob/main/Promotional/warpedworld_height.png" width=500>
+<img src="https://github.com/carlpilot/Planet-Workshop/blob/main/Promotional/warpedworld_texture.png" width=400>
 
 ## Details
 - Customise features such as size, noise parameters, craters, colour and more
