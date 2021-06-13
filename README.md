@@ -22,7 +22,7 @@ Heightmap and texture:<br>
 - [x] Layering of noise and layering UI elements
 - [x] Different types of noise (ridge, etc)
 - [ ] Gradient colour picker for altitude
-- [ ] Mixing between randomised and altitude-based colour maps
+- [x] Mixing between randomised and altitude-based colour maps
 - [ ] Colour affected by crater presence
 - [ ] Masks for noise and colour maps
 - [ ] Save and load in a native format

@@ -13,7 +13,8 @@ public class SimpleProperty : MonoBehaviour
     public Text valueText;
 
     private void Update () {
-        valueText.text = string.Format ("({0})", GetValue ());
+        if (valueText != null)
+            valueText.text = string.Format ("({0})", GetValue ());
     }
 
     public float GetValue () {

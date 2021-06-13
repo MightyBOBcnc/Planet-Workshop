@@ -10,24 +10,35 @@ public class WorkshopManager : MonoBehaviour
     public Material planetMaterial;
 
     // PLANET OPTIONS
+    [Header("Planet Options")]
     public PropertyPanel radiusPanel;
 
     // NOISE
+    [Header("Noise Options")]
     public GameObject noiseLayerPanelPrefab;
     public RectTransform noiseLayerPanelParent;
     public List<NoiseLayerPanel> noiseLayerPanels;
 
     // CRATERS
+    [Header("Crater Options")]
     public PropertyPanel numCratersPanel;
     public PropertyPanel craterMaxSizePanel;
 
     // COLOUR
+    [Header("Colour Options")]
     public ColourProperty surfaceColour1;
     public ColourProperty surfaceColour2;
     public PropertyPanel colourBlendingPanel;
     public PropertyPanel colourScalePanel;
+    public PropertyPanel colourOctavesPanel;
+    public ColourProperty surfaceColourLow;
+    public ColourProperty surfaceColourHigh;
+    public SimpleProperty gradientBlendingPanel;
+    public PropertyPanel gradientBlendingNoisePanel;
+    public PropertyPanel gradientBlendingSmoothnessPanel;
 
     // EXPORT
+    [Header("Export Options")]
     public SimpleProperty heightmapResolutionPanel;
     public SimpleProperty textureResolutionPanel;
     public InputField planetName;
@@ -48,37 +59,52 @@ public class WorkshopManager : MonoBehaviour
         if (GameObject.Find ("PlanetParent") != null)
             Destroy (GameObject.Find ("PlanetParent"));
 
+        CreatePlanetOptions ();
+
+        GetComponent<PlanetMaker> ().CreatePlanet (p);
+    }
+
+    public void CreatePlanetOptions () {
+        // SETUP and PLANET OPTIONS
         p = new PlanetOptions ();
         p.resolution = 255;
         p.radius = radiusPanel.GetValue ();
         p.material = planetMaterial;
         p.seed = Random.Range (-10000f, 10000f);
 
+        // NOISE
         p.layers = new NoiseLayer[noiseLayerPanels.Count];
-        for(int i = 0; i < p.layers.Length; i++) {
+        for (int i = 0; i < p.layers.Length; i++) {
             p.layers[i] = noiseLayerPanels[i].GetLayer (i, p.seed);
-            Debug.Log ("Layer " + i + ": " + p.layers[i].Evaluate (0f, 0f, 0f) + " " + p.layers[i].Evaluate(0.1f, 0.1f, 0.1f));
+            Debug.Log ("Layer " + i + ": " + p.layers[i].Evaluate (0f, 0f, 0f) + " " + p.layers[i].Evaluate (0.1f, 0.1f, 0.1f));
         }
 
+        // COLOUR
         p.col1 = surfaceColour1.Colour;
         p.col2 = surfaceColour2.Colour;
         p.colourBlending = colourBlendingPanel.GetValue ();
         p.colourScale = colourScalePanel.GetValue ();
+        p.colourOctaves = (int) colourOctavesPanel.GetValue ();
+        p.colLow = surfaceColourLow.Colour;
+        p.colHigh = surfaceColourHigh.Colour;
+        p.gradientBlending = gradientBlendingPanel.GetValue ();
+        p.gradientBlendingNoise = gradientBlendingNoisePanel.GetValue ();
+        p.gradientBlendingNoiseSmoothness = gradientBlendingSmoothnessPanel.GetValue ();
 
-        p.texRes = (int)textureResolutionPanel.GetValue ();
-        p.hgtRes = (int)heightmapResolutionPanel.GetValue ();
+        // RESOLUTION
+        p.texRes = (int) textureResolutionPanel.GetValue ();
+        p.hgtRes = (int) heightmapResolutionPanel.GetValue ();
 
+        // CRATERS
         p.craters = new Crater[(int) numCratersPanel.GetValue ()];
         for (int i = 0; i < p.craters.Length; i++) {
             p.craters[i] = new Crater (Random.onUnitSphere * p.radius, craterMaxSizePanel.GetValue ());
         }
-
-        GetComponent<PlanetMaker> ().CreatePlanet (p);
     }
 
     public void ExportPlanet () {
         Texture2D heightmap = GetComponent<PlanetMaker> ().CreateHeightmap (p, p.hgtRes);
-        Texture2D tex = PlanetMaker.CreateTexture (p, p.texRes);
+        Texture2D tex = GetComponent<PlanetMaker> ().CreateTexture (p, p.texRes);
 
         byte[] heightmapBytes = heightmap.EncodeToPNG ();
         byte[] texBytes = tex.EncodeToPNG ();
@@ -117,12 +143,6 @@ public class PlanetOptions {
 
     public float radius;
 
-    /*
-    public float noiseScale;
-    public int noiseOctaves;
-    public float noiseHeight;
-    */
-
     public NoiseLayer[] layers;
 
     public float seed;
@@ -130,6 +150,12 @@ public class PlanetOptions {
     public Color col1, col2;
     public float colourBlending;
     public float colourScale;
+    public int colourOctaves;
+
+    public Color colLow, colHigh;
+    public float gradientBlending;
+    public float gradientBlendingNoise;
+    public float gradientBlendingNoiseSmoothness;
 
     public Crater[] craters;
 

@@ -8,14 +8,24 @@ public class PlanetMaker : MonoBehaviour {
 
     public Texture3D tex3d;
 
+    float MinHeight = float.MaxValue;
+    float MaxHeight = float.MinValue;
+    float MinLWH = float.MaxValue;
+    float MaxLWH = float.MinValue;
+
     public void CreatePlanet (PlanetOptions options) {
+
+        MinHeight = float.MaxValue;
+        MaxHeight = float.MinValue;
+        MinLWH = float.MaxValue;
+        MaxLWH = float.MinValue;
 
         GameObject planetParent = new GameObject ("PlanetParent");
 
-        options.material.mainTexture = CreateTexture (options, options.texRes);
-
         if (options.craters.Length > 0)
             tex3d = CreateCraterMap (options);
+
+        options.material.mainTexture = CreateTexture (options, options.texRes);
 
         for (byte i = 1; i <= 6; i++) {
             GameObject g = new GameObject ("Plane " + i);
@@ -85,8 +95,6 @@ public class PlanetMaker : MonoBehaviour {
 
     public Texture2D CreateHeightmap (PlanetOptions options, int width) {
         float[,] heights = new float[width, width / 2];
-        float max = float.MinValue;
-        float min = float.MaxValue;
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < width / 2; y++) {
@@ -96,8 +104,8 @@ public class PlanetMaker : MonoBehaviour {
                 Vector3 point3d = options.radius * new Vector3 (Mathf.Cos (longitude) * Mathf.Cos (latitude), Mathf.Sin (latitude), Mathf.Sin (longitude) * Mathf.Cos (latitude));
                 float v = FinalWorldHeight (point3d, options);
                 heights[x, y] = v;
-                if (v < min) min = v;
-                if (v > max) max = v;
+                //if (v < min) min = v; now dealt with within finalworldheight
+                //if (v > max) max = v;
             }
         }
 
@@ -106,7 +114,7 @@ public class PlanetMaker : MonoBehaviour {
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < width / 2; y++) {
-                pixels[x + y * width] = Color.white * Mathf.InverseLerp (min, max, heights[x, y]) + new Color(0, 0, 0, 1);
+                pixels[x + y * width] = Color.white * Mathf.InverseLerp (MinHeight, MaxHeight, heights[x, y]) + new Color(0, 0, 0, 1);
             }
         }
 
@@ -218,7 +226,7 @@ public class PlanetMaker : MonoBehaviour {
 
         for (int i = 0; i < vertices.Length; i++) {
             Vector3 wp = g.transform.TransformPoint (vertices[i]);
-            float a = 1f;
+            //float a = 1f;
             //vertices[i] *= 1f + (2*a * per3d (wp.x, wp.y, wp.z, options) - a) / options.radius;
             Vector3 norm = vertices[i].normalized;
             //vertices[i] += WorldNoise (wp.x, wp.y, wp.z, options) * norm * options.radius;
@@ -244,7 +252,7 @@ public class PlanetMaker : MonoBehaviour {
         //return g;
     }
 
-    public static Texture2D CreateTexture (PlanetOptions p, int xRes) {
+    public Texture2D CreateTexture (PlanetOptions p, int xRes) {
 
         //int xRes = 512;
         int yRes = xRes / 2; //256;
@@ -260,7 +268,19 @@ public class PlanetMaker : MonoBehaviour {
                 Vector3 point3d = p.radius * new Vector3 (Mathf.Cos (longitude) * Mathf.Cos (latitude), Mathf.Sin (latitude), Mathf.Sin (longitude) * Mathf.Cos (latitude));
 
                 //pixels[x + y * xRes] = new Color (Mathf.Pow (point3d.x / p.radius / 2f + 0.5f, 7), Mathf.Pow (point3d.y / p.radius / 2f + 0.5f, 7), Mathf.Pow (point3d.z / p.radius / 2f + 0.5f, 7));
-                pixels[x + y * xRes] = Color.Lerp (p.col1, p.col2, (scaleNoise (-point3d + Vector3.one * p.seed, p.colourScale * p.radius) / 2f / (p.colourBlending + 0.0001f)) + 0.5f);
+                //pixels[x + y * xRes] = Color.Lerp (p.col1, p.col2, (scaleNoise (-point3d + Vector3.one * p.seed, p.colourScale * p.radius) / 2f / (p.colourBlending + 0.0001f)) + 0.5f);
+
+                float heightFrac = Map(LayerWorldHeight (point3d, p), MinLWH, MaxLWH, 0f, 1f);
+
+                float randomNoise = scaleOctaveNoise (-point3d + Vector3.one * p.seed, p.colourScale * p.radius, p.colourOctaves) / (2f * p.colourBlending + 0.0001f);
+                Color randomColour = Color.Lerp (p.col1, p.col2, randomNoise + 0.5f);
+
+                Color heightColour = Color.Lerp (p.colLow, p.colHigh, heightFrac);
+
+                float gradientBlendingNoise = scaleOctaveNoise (point3d * 0.5f - Vector3.right * p.seed, p.colourScale * p.radius, p.colourOctaves) * p.gradientBlendingNoise;
+                Color finalColour = Color.Lerp (randomColour, heightColour, p.gradientBlending + gradientBlendingNoise / (2f * p.gradientBlendingNoiseSmoothness + 0.01f));
+
+                pixels[x + y * xRes] = finalColour;//Color.Lerp (randomColour, heightColour, p.gradientBlending);
             }
         }
 
@@ -273,28 +293,52 @@ public class PlanetMaker : MonoBehaviour {
     float FinalWorldHeight(float x, float y, float z, PlanetOptions p) {
         //return WorldNoise (x, y, z, p) * p.radius + SampleCraterMap (x, y, z, p) * 0.013f * p.radius;
 
-        float layerTotal = 0f;
-
-        for(int i = 0; i < p.layers.Length; i++) {
-            layerTotal += p.layers[i].Evaluate (x, y, z);
-        }
+        float layerTotal = LayerWorldHeight (x, y, z, p);
 
         float craters = SampleCraterMap (x, y, z, p) * 0.013f * p.radius;
 
-        return layerTotal + craters;
+        float val = layerTotal + craters;
+
+        if (val < MinHeight) MinHeight = val;
+        if (val > MaxHeight) MaxHeight = val;
+
+        return val;
     }
 
     float FinalWorldHeight (Vector3 x, PlanetOptions p) => FinalWorldHeight (x.x, x.y, x.z, p);
 
-    static float noisef (float x, float y) {
-        return Mathf.PerlinNoise (x, y);
+    float LayerWorldHeight (float x, float y, float z, PlanetOptions p) {
+        float layerTotal = 0f;
+
+        for (int i = 0; i < p.layers.Length; i++) {
+            layerTotal += p.layers[i].Evaluate (x, y, z);
+        }
+
+        if (layerTotal < MinLWH) MinLWH = layerTotal;
+        if (layerTotal > MaxLWH) MaxLWH = layerTotal;
+
+        return layerTotal;
     }
 
-    static float noisef (float x, float y, float z) {
-        return Perlin.Noise (x, y, z);
-    }
+    float LayerWorldHeight (Vector3 x, PlanetOptions p) => LayerWorldHeight (x.x, x.y, x.z, p);
+
+    static float noisef (float x, float y) => Mathf.PerlinNoise (x, y);
+
+    static float noisef (float x, float y, float z) => Perlin.Noise (x, y, z);
+
+    static float noisef (Vector3 v) => noisef (v.x, v.y, v.z);
 
     static float scaleNoise (Vector3 p, float scale) => noisef (p.x / scale, p.y / scale, p.z / scale);
+
+    static float scaleOctaveNoise (Vector3 p, float scale, int octaves) {
+        float total = 0f;
+        for(int i = 0; i < octaves; i++) {
+            total += scaleNoise (p, scale) / Mathf.Pow (2f, i);
+            p *= 2f;
+            scale /= 2f;
+        }
+        return total / (2f - 2f * Mathf.Pow (0.5f, octaves));
+    }
 
     #region NOISE TRANSFORMATIONS
     public static float TransformRidge (float x) => 1f - 2f * Mathf.Abs (x - 0.5f);
@@ -305,9 +349,7 @@ public class PlanetMaker : MonoBehaviour {
         => Mathf.Rad2Deg * Mathf.Atan2 (Vector3.Dot (Vector3.Cross (dir1, dir2), normal), Vector3.Dot (dir1, dir2));
 
     // https://forum.unity.com/threads/mapping-or-scaling-values-to-a-new-range.180090/#post-2241099
-    public static float Map (float x, float in_min, float in_max, float out_min, float out_max) {
-        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-    }
+    public static float Map (float x, float in_min, float in_max, float out_min, float out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 // OBSOLETE

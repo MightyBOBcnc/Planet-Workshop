@@ -12,9 +12,14 @@ public class ColourProperty : MonoBehaviour
 
     bool hasInitialised = false;
 
-    float red, green, blue;
+    float red = 0.5f, green = 0.5f, blue = 0.5f;
 
     private void Awake () {
+
+        redSlider.value = Random.value;
+        greenSlider.value = Random.value;
+        blueSlider.value = Random.value;
+
         red = redSlider.value; green = greenSlider.value; blue = blueSlider.value;
     }
 
