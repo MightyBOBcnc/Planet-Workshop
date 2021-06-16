@@ -23,7 +23,7 @@ Heightmap and texture:<br>
 - [x] Different types of noise (ridge, etc)
 - [ ] Gradient colour picker for altitude
 - [x] Mixing between randomised and altitude-based colour maps
-- [ ] Colour affected by crater presence
+- [x] Colour affected by crater presence
 - [ ] Masks for noise and colour maps
 - [ ] Save and load in a native format
 - [ ] Control over random seed to allow full functionality of save/load
