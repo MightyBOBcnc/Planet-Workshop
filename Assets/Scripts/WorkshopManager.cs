@@ -23,6 +23,7 @@ public class WorkshopManager : MonoBehaviour
     [Header("Crater Options")]
     public PropertyPanel numCratersPanel;
     public PropertyPanel craterMaxSizePanel;
+    public PropertyPanel craterDepthPanel;
 
     // COLOUR
     [Header("Colour Options")]
@@ -36,6 +37,8 @@ public class WorkshopManager : MonoBehaviour
     public SimpleProperty gradientBlendingPanel;
     public PropertyPanel gradientBlendingNoisePanel;
     public PropertyPanel gradientBlendingSmoothnessPanel;
+    public ColourProperty craterBottomColour;
+    public SimpleProperty craterColourStrengthPanel;
 
     // EXPORT
     [Header("Export Options")]
@@ -90,12 +93,15 @@ public class WorkshopManager : MonoBehaviour
         p.gradientBlending = gradientBlendingPanel.GetValue ();
         p.gradientBlendingNoise = gradientBlendingNoisePanel.GetValue ();
         p.gradientBlendingNoiseSmoothness = gradientBlendingSmoothnessPanel.GetValue ();
+        p.colCrater = craterBottomColour.Colour;
+        p.craterColouring = craterColourStrengthPanel.GetValue ();
 
         // RESOLUTION
         p.texRes = (int) textureResolutionPanel.GetValue ();
         p.hgtRes = (int) heightmapResolutionPanel.GetValue ();
 
         // CRATERS
+        p.craterDepth = craterDepthPanel.GetValue ();
         p.craters = new Crater[(int) numCratersPanel.GetValue ()];
         for (int i = 0; i < p.craters.Length; i++) {
             p.craters[i] = new Crater (Random.onUnitSphere * p.radius, craterMaxSizePanel.GetValue ());
@@ -157,7 +163,11 @@ public class PlanetOptions {
     public float gradientBlendingNoise;
     public float gradientBlendingNoiseSmoothness;
 
+    public Color colCrater;
+    public float craterColouring;
+
     public Crater[] craters;
+    public float craterDepth;
 
     public int texRes;
     public int hgtRes;

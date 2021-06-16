@@ -278,7 +278,10 @@ public class PlanetMaker : MonoBehaviour {
                 Color heightColour = Color.Lerp (p.colLow, p.colHigh, heightFrac);
 
                 float gradientBlendingNoise = scaleOctaveNoise (point3d * 0.5f - Vector3.right * p.seed, p.colourScale * p.radius, p.colourOctaves) * p.gradientBlendingNoise;
-                Color finalColour = Color.Lerp (randomColour, heightColour, p.gradientBlending + gradientBlendingNoise / (2f * p.gradientBlendingNoiseSmoothness + 0.01f));
+                Color finalSurfaceColour = Color.Lerp (randomColour, heightColour, p.gradientBlending + gradientBlendingNoise / (2f * p.gradientBlendingNoiseSmoothness + 0.01f));
+
+                float craterContribution = p.craterColouring * /*Mathf.Clamp01*/ (-0.8f + 2f * SampleCraterMap (point3d.x, point3d.y, point3d.z, p) / -3f);
+                Color finalColour = Color.Lerp (finalSurfaceColour, p.colCrater, craterContribution);
 
                 pixels[x + y * xRes] = finalColour;//Color.Lerp (randomColour, heightColour, p.gradientBlending);
             }
@@ -295,7 +298,7 @@ public class PlanetMaker : MonoBehaviour {
 
         float layerTotal = LayerWorldHeight (x, y, z, p);
 
-        float craters = SampleCraterMap (x, y, z, p) * 0.013f * p.radius;
+        float craters = SampleCraterMap (x, y, z, p) * p.craterDepth * p.radius;
 
         float val = layerTotal + craters;
 
