@@ -108,7 +108,7 @@ public class WorkshopManager : MonoBehaviour
         }
     }
 
-    public void ExportPlanet () {
+    public void ExportPlanetTextures () {
         Texture2D heightmap = GetComponent<PlanetMaker> ().CreateHeightmap (p, p.hgtRes);
         Texture2D tex = GetComponent<PlanetMaker> ().CreateTexture (p, p.texRes);
 
@@ -117,6 +117,10 @@ public class WorkshopManager : MonoBehaviour
 
         File.WriteAllBytes (Application.dataPath + "/" + planetName.text + "_height.png", heightmapBytes);
         File.WriteAllBytes (Application.dataPath + "/" + planetName.text + "_texture.png", texBytes);
+    }
+
+    public void ExportPlanetMesh () {
+        GetComponent<PlanetMaker> ().SaveOBJ (planetName.text);
     }
 
     public void AddNoiseLayer () {
@@ -179,6 +183,6 @@ public struct Crater {
     public Crater (Vector3 position, float maxSize) {
         this.position = position;
         float v = Random.value;
-        this.size = maxSize * v;// (0.112f * Mathf.Pow (1.61f, v) + 0.811f * Mathf.Pow (v, 5f));
+        this.size = maxSize * (0.112f * Mathf.Pow (1.61f, v) + 0.811f * Mathf.Pow (v, 5f)); //maxSize * v;
     }
 }

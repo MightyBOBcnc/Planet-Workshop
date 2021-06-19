@@ -8,6 +8,8 @@ public class PlanetMaker : MonoBehaviour {
 
     public Texture3D tex3d;
 
+    GameObject[] planes;
+
     float MinHeight = float.MaxValue;
     float MaxHeight = float.MinValue;
     float MinLWH = float.MaxValue;
@@ -27,10 +29,13 @@ public class PlanetMaker : MonoBehaviour {
 
         options.material.mainTexture = CreateTexture (options, options.texRes);
 
+        planes = new GameObject[6];
+
         for (byte i = 1; i <= 6; i++) {
             GameObject g = new GameObject ("Plane " + i);
             StartCoroutine (CreatePlane (i, options, g));
             g.transform.parent = planetParent.transform;
+            planes[i - 1] = g;
         }
 
         planetParent.transform.localScale = 1f / options.radius * Vector3.one;
@@ -122,6 +127,10 @@ public class PlanetMaker : MonoBehaviour {
         t.Apply ();
         
         return t;
+    }
+
+    public void SaveOBJ (string name) {
+        PlanetOBJExporter.SavePlanetMesh (planes, name);
     }
 
     public static float CraterMapCoordToWorldCoord (float x, PlanetOptions o) => (2f * x - 1f) * (o.radius * 1.25f);
