@@ -70,7 +70,7 @@ public class WorkshopManager : MonoBehaviour
     public void CreatePlanetOptions () {
         // SETUP and PLANET OPTIONS
         p = new PlanetOptions ();
-        p.resolution = 255;
+        p.resolution = 32;
         p.radius = radiusPanel.GetValue ();
         p.material = planetMaterial;
         p.seed = Random.Range (-10000f, 10000f);
