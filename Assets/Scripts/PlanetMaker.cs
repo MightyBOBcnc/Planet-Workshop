@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlanetMaker : MonoBehaviour {
 
@@ -28,7 +29,9 @@ public class PlanetMaker : MonoBehaviour {
         if (options.craters.Length > 0)
             tex3d = CreateCraterMap (options);
 
-        options.material.mainTexture = CreateTexture (options, options.texRes);
+        Texture t = CreateTexture (options, options.texRes);
+        options.material.mainTexture = t;
+        GameObject.Find ("TexturePreview").GetComponent<RawImage> ().texture = t;
 
         planes = new GameObject[6];
 
@@ -40,6 +43,7 @@ public class PlanetMaker : MonoBehaviour {
         }
 
         planetParent.transform.localScale = 1f / options.radius * Vector3.one;
+        planetParent.AddComponent<RotatePlanet> ();
     }
 
     public Texture3D CreateCraterMap (PlanetOptions options) {
@@ -80,8 +84,8 @@ public class PlanetMaker : MonoBehaviour {
         float min = Mathf.Min (values);
         float max = Mathf.Max (values);
 
-        print ("Min: " + min);
-        print ("Max: " + max);
+        //print ("Min: " + min);
+        //print ("Max: " + max);
 
         for (int z = 0; z < t.depth; z++) {
             for (int y = 0; y < t.height; y++) {

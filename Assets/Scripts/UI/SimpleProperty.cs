@@ -29,4 +29,21 @@ public class SimpleProperty : MonoBehaviour
                 return 0;
         }
     }
+
+    public void SetValue (float value) {
+        switch (valueConversionMode) {
+            case ValueConversionMode.Normal:
+                valueSlider.value = value;
+                break;
+            case ValueConversionMode.PowerOfTwo:
+                valueSlider.value = Mathf.Log (value, 2f);
+                break;
+            case ValueConversionMode.PowerOfTwoMinusOne:
+                valueSlider.value = Mathf.Log (value + 1, 2f);
+                break;
+            default:
+                valueSlider.value = value;
+                break;
+        }
+    }
 }

@@ -44,4 +44,9 @@ public class PropertyPanel : MonoBehaviour
     }
 
     public float GetValue () => (value != float.MaxValue) ? value : defaultValue;
+
+    public void SetValue (float v) {
+        value = v;
+        inputField.text = v.ToString (!integer ? "F2" : "F0");
+    }
 }

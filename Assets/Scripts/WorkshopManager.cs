@@ -80,7 +80,7 @@ public class WorkshopManager : MonoBehaviour
         p.layers = new NoiseLayer[noiseLayerPanels.Count];
         for (int i = 0; i < p.layers.Length; i++) {
             p.layers[i] = noiseLayerPanels[i].GetLayer (i, p.seed);
-            Debug.Log ("Layer " + i + ": " + p.layers[i].Evaluate (0f, 0f, 0f) + " " + p.layers[i].Evaluate (0.1f, 0.1f, 0.1f));
+            //Debug.Log ("Layer " + i + ": " + p.layers[i].Evaluate (0f, 0f, 0f) + " " + p.layers[i].Evaluate (0.1f, 0.1f, 0.1f));
         }
 
         // COLOUR
