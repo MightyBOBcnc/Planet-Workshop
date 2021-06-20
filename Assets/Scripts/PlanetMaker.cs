@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class PlanetMaker : MonoBehaviour {
@@ -130,7 +131,29 @@ public class PlanetMaker : MonoBehaviour {
     }
 
     public void SaveOBJ (string name) {
-        PlanetOBJExporter.SavePlanetMesh (planes, name);
+        PlanetExporter.SavePlanetMesh (planes, name);
+    }
+
+    public void SaveCubemapTexture (PlanetOptions p, string name, int resolution) {
+
+        Texture2D t = new Texture2D (resolution * 3, resolution * 2);
+        Color[] pixels = new Color[resolution * resolution * 6];
+
+        for(int i = 0; i < t.width; i++) {
+            for(int j = 0; j < t.height; j++) {
+                int panel = Mathf.FloorToInt (3f * i / t.width) + 3 * Mathf.FloorToInt (2f * j / t.height);
+                int lx = i % resolution;
+                int ly = j % resolution;
+                Vector3 localPoint = (new Vector3 (lx - (resolution - 1) / 2f, (resolution - 1) / 2f, ly - (resolution - 1) / 2f) / (float) resolution).normalized * p.radius;
+                Vector3 worldPoint = Vector3.Scale (planes[panel].transform.TransformPoint (localPoint) * p.radius, new Vector3 (-1f, 1f, -1f));
+                pixels[i + j * resolution * 3] = SampleTexture (worldPoint, p);
+            }
+        }
+
+        t.SetPixels (pixels);
+        t.Apply ();
+
+        File.WriteAllBytes (Application.dataPath + "/" + name + "_cubemap.png", t.EncodeToPNG ());
     }
 
     public static float CraterMapCoordToWorldCoord (float x, PlanetOptions o) => (2f * x - 1f) * (o.radius * 1.25f);
@@ -276,23 +299,7 @@ public class PlanetMaker : MonoBehaviour {
 
                 Vector3 point3d = p.radius * new Vector3 (Mathf.Cos (longitude) * Mathf.Cos (latitude), Mathf.Sin (latitude), Mathf.Sin (longitude) * Mathf.Cos (latitude));
 
-                //pixels[x + y * xRes] = new Color (Mathf.Pow (point3d.x / p.radius / 2f + 0.5f, 7), Mathf.Pow (point3d.y / p.radius / 2f + 0.5f, 7), Mathf.Pow (point3d.z / p.radius / 2f + 0.5f, 7));
-                //pixels[x + y * xRes] = Color.Lerp (p.col1, p.col2, (scaleNoise (-point3d + Vector3.one * p.seed, p.colourScale * p.radius) / 2f / (p.colourBlending + 0.0001f)) + 0.5f);
-
-                float heightFrac = Map(LayerWorldHeight (point3d, p), MinLWH, MaxLWH, 0f, 1f);
-
-                float randomNoise = scaleOctaveNoise (-point3d + Vector3.one * p.seed, p.colourScale * p.radius, p.colourOctaves) / (2f * p.colourBlending + 0.0001f);
-                Color randomColour = Color.Lerp (p.col1, p.col2, randomNoise + 0.5f);
-
-                Color heightColour = Color.Lerp (p.colLow, p.colHigh, heightFrac);
-
-                float gradientBlendingNoise = scaleOctaveNoise (point3d * 0.5f - Vector3.right * p.seed, p.colourScale * p.radius, p.colourOctaves) * p.gradientBlendingNoise;
-                Color finalSurfaceColour = Color.Lerp (randomColour, heightColour, p.gradientBlending + gradientBlendingNoise / (2f * p.gradientBlendingNoiseSmoothness + 0.01f));
-
-                float craterContribution = p.craterColouring * /*Mathf.Clamp01*/ (-0.8f + 2f * SampleCraterMap (point3d.x, point3d.y, point3d.z, p) / -3f);
-                Color finalColour = Color.Lerp (finalSurfaceColour, p.colCrater, craterContribution);
-
-                pixels[x + y * xRes] = finalColour;//Color.Lerp (randomColour, heightColour, p.gradientBlending);
+                pixels[x + y * xRes] = SampleTexture (point3d, p);
             }
         }
 
@@ -300,6 +307,23 @@ public class PlanetMaker : MonoBehaviour {
         t.Apply ();
 
         return t;
+    }
+
+    public Color SampleTexture (Vector3 point3d, PlanetOptions p) {
+        float heightFrac = Map (LayerWorldHeight (point3d, p), MinLWH, MaxLWH, 0f, 1f);
+
+        float randomNoise = scaleOctaveNoise (-point3d + Vector3.one * p.seed, p.colourScale * p.radius, p.colourOctaves) / (2f * p.colourBlending + 0.0001f);
+        Color randomColour = Color.Lerp (p.col1, p.col2, randomNoise + 0.5f);
+
+        Color heightColour = Color.Lerp (p.colLow, p.colHigh, heightFrac);
+
+        float gradientBlendingNoise = scaleOctaveNoise (point3d * 0.5f - Vector3.right * p.seed, p.colourScale * p.radius, p.colourOctaves) * p.gradientBlendingNoise;
+        Color finalSurfaceColour = Color.Lerp (randomColour, heightColour, p.gradientBlending + gradientBlendingNoise / (2f * p.gradientBlendingNoiseSmoothness + 0.01f));
+
+        float craterContribution = p.craterColouring * /*Mathf.Clamp01*/ (-0.8f + 2f * SampleCraterMap (point3d.x, point3d.y, point3d.z, p) / -3f);
+        Color finalColour = Color.Lerp (finalSurfaceColour, p.colCrater, craterContribution);
+
+        return finalColour;//Color.Lerp (randomColour, heightColour, p.gradientBlending);
     }
 
     float FinalWorldHeight(float x, float y, float z, PlanetOptions p) {

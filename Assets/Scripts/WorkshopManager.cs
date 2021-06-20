@@ -70,7 +70,7 @@ public class WorkshopManager : MonoBehaviour
     public void CreatePlanetOptions () {
         // SETUP and PLANET OPTIONS
         p = new PlanetOptions ();
-        p.resolution = 32;
+        p.resolution = 128;
         p.radius = radiusPanel.GetValue ();
         p.material = planetMaterial;
         p.seed = Random.Range (-10000f, 10000f);
@@ -121,6 +121,7 @@ public class WorkshopManager : MonoBehaviour
 
     public void ExportPlanetMesh () {
         GetComponent<PlanetMaker> ().SaveOBJ (planetName.text);
+        //GetComponent<PlanetMaker> ().SaveCubemapTexture (p, planetName.text, 256);
     }
 
     public void AddNoiseLayer () {

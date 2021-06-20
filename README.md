@@ -1,5 +1,5 @@
 # :stars::ringed_planet: Planet Workshop :ringed_planet::stars:
-Create varied planets and moons, and export equirectangular terrain heightmaps and textures for use in other applications
+Create varied planets and moons, and export terrain heightmaps, textures and 3D models for use in other applications
 
 ## Overview
 Planet:<br>
@@ -18,13 +18,14 @@ Heightmap and texture:<br>
 - [x] Customisable noise scale, height and octaves
 - [x] Varied surface colour
 - [x] Random crater generation
-- [x] Export heightmap and texture
+- [x] Export equirectangular heightmap and texture
+- [x] Export 3D models and unwrapped textures
 - [x] Layering of noise and layering UI elements
 - [x] Different types of noise (ridge, etc)
 - [ ] Gradient colour picker for altitude
 - [x] Mixing between randomised and altitude-based colour maps
 - [x] Colour affected by crater presence
-- [ ] Masks for noise and colour maps
+- [x] Masks for noise and colour maps
 - [ ] Save and load in a native format
 - [ ] Control over random seed to allow full functionality of save/load
 - [ ] Noise height curves for more varied surface
