@@ -14,7 +14,7 @@ public class ColourProperty : MonoBehaviour
 
     float red = 0.5f, green = 0.5f, blue = 0.5f;
 
-    private void Awake () {
+    public void Init () {
 
         redSlider.value = Random.value;
         greenSlider.value = Random.value;
@@ -56,5 +56,10 @@ public class ColourProperty : MonoBehaviour
         }
     }
 
-    public Color Colour { get => new Color (red, green, blue); }
+    public Color Colour {
+        get {
+            if (!hasInitialised) Init ();
+            return new Color (red, green, blue);
+        }
+    }
 }

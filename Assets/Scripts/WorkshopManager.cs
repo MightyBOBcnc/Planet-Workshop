@@ -12,6 +12,7 @@ public class WorkshopManager : MonoBehaviour
     // PLANET OPTIONS
     [Header("Planet Options")]
     public PropertyPanel radiusPanel;
+    public SimpleProperty resolutionPanel;
 
     // NOISE
     [Header("Noise Options")]
@@ -70,7 +71,7 @@ public class WorkshopManager : MonoBehaviour
     public void CreatePlanetOptions () {
         // SETUP and PLANET OPTIONS
         p = new PlanetOptions ();
-        p.resolution = 128;
+        p.resolution = (int)resolutionPanel.GetValue();
         p.radius = radiusPanel.GetValue ();
         p.material = planetMaterial;
         p.seed = Random.Range (-10000f, 10000f);

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class SimpleProperty : MonoBehaviour
 {
 
-    public enum ValueConversionMode { Normal, PowerOfTwo };
+    public enum ValueConversionMode { Normal, PowerOfTwo, PowerOfTwoMinusOne };
     public ValueConversionMode valueConversionMode;
 
     public Slider valueSlider;
@@ -23,6 +23,8 @@ public class SimpleProperty : MonoBehaviour
                 return valueSlider.value;
             case ValueConversionMode.PowerOfTwo:
                 return Mathf.Pow(2f, valueSlider.value);
+            case ValueConversionMode.PowerOfTwoMinusOne:
+                return Mathf.Pow (2f, valueSlider.value) - 1;
             default:
                 return 0;
         }

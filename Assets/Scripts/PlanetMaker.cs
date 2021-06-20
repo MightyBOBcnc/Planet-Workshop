@@ -267,6 +267,7 @@ public class PlanetMaker : MonoBehaviour {
         }
 
         Mesh m = new Mesh ();
+        if (vertices.Length > 65535) m.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         m.vertices = vertices;
         m.triangles = triangles;
         m.uv = uvs;
