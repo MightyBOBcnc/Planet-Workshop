@@ -186,7 +186,9 @@ public class SaveLoadManager : MonoBehaviour
 
     public void ListFiles () {
 
-        for(int i = 0; i < buttonsParent.childCount; i++) {
+        if (!Directory.Exists (directory)) Directory.CreateDirectory (directory);
+
+        for (int i = 0; i < buttonsParent.childCount; i++) {
             if(buttonsParent.GetChild(i) != buttonPrefab.transform)
                 Destroy (buttonsParent.GetChild (i).gameObject);
         }

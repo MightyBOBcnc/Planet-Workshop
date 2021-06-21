@@ -135,8 +135,11 @@ public class WorkshopManager : MonoBehaviour
         byte[] heightmapBytes = heightmap.EncodeToPNG ();
         byte[] texBytes = tex.EncodeToPNG ();
 
-        File.WriteAllBytes (Application.dataPath.Replace ("Planet Workshop_Data", "Saves") + "/" + planetName.text + "_height.png", heightmapBytes);
-        File.WriteAllBytes (Application.dataPath.Replace ("Planet Workshop_Data", "Saves") + "/" + planetName.text + "_texture.png", texBytes);
+        string directory = Application.dataPath.Replace ("Planet Workshop_Data", "Export");
+        if (!Directory.Exists (directory)) Directory.CreateDirectory (directory);
+
+        File.WriteAllBytes (Application.dataPath.Replace ("Planet Workshop_Data", "Export") + "/" + planetName.text + "_height.png", heightmapBytes);
+        File.WriteAllBytes (Application.dataPath.Replace ("Planet Workshop_Data", "Export") + "/" + planetName.text + "_texture.png", texBytes);
     }
 
     public void ExportPlanetMesh () {
