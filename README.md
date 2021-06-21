@@ -1,4 +1,4 @@
-# :stars::ringed_planet: Planet Workshop :ringed_planet::stars:
+<p align='center'><img src="https://github.com/carlpilot/Planet-Workshop/blob/main/Promotional/Logo/logo-universal2.png" width=750></p>
 Create varied planets and moons, and export terrain heightmaps, textures and 3D models for use in other applications
 
 ## Overview
