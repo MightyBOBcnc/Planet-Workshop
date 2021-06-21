@@ -166,6 +166,14 @@ public class WorkshopManager : MonoBehaviour
         p.Rebuild ();
     }
 
+    public void Quit() {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
+    }
+
     public static float SeedHash (string s) {
         return (System.BitConverter.ToInt32 (System.Security.Cryptography.MD5.Create ().ComputeHash (System.Text.Encoding.UTF8.GetBytes (s)), 0)) / 1000f % 10000f;
     }
