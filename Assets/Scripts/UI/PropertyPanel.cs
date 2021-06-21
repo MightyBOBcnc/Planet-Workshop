@@ -19,7 +19,11 @@ public class PropertyPanel : MonoBehaviour
     private void Start () {
         if (value == float.MaxValue)
             value = defaultValue;
+#if UNITY_EDITOR
         maxDeltaPerTick = (valueMinMax.y - valueMinMax.x) * Time.fixedDeltaTime / 3f; // (value range) * (delta time) / (seconds for full deflection)
+#else
+        maxDeltaPerTick = (valueMinMax.y - valueMinMax.x) * Time.fixedDeltaTime;
+#endif
         inputField.text = "" + value;
     }
 

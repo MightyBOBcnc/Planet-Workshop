@@ -128,19 +128,23 @@ public class WorkshopManager : MonoBehaviour
     }
 
     public void ExportPlanetTextures () {
+
         Texture2D heightmap = GetComponent<PlanetMaker> ().CreateHeightmap (p, p.hgtRes);
         Texture2D tex = GetComponent<PlanetMaker> ().CreateTexture (p, p.texRes);
 
         byte[] heightmapBytes = heightmap.EncodeToPNG ();
         byte[] texBytes = tex.EncodeToPNG ();
 
-        File.WriteAllBytes (Application.dataPath + "/" + planetName.text + "_height.png", heightmapBytes);
-        File.WriteAllBytes (Application.dataPath + "/" + planetName.text + "_texture.png", texBytes);
+        File.WriteAllBytes (Application.dataPath.Replace ("Planet Workshop_Data", "Saves") + "/" + planetName.text + "_height.png", heightmapBytes);
+        File.WriteAllBytes (Application.dataPath.Replace ("Planet Workshop_Data", "Saves") + "/" + planetName.text + "_texture.png", texBytes);
     }
 
     public void ExportPlanetMesh () {
+        Quaternion q = GameObject.Find ("PlanetParent").transform.rotation;
+        GameObject.Find ("PlanetParent").transform.rotation = Quaternion.identity; // prevent longitude calculation from being messed up by rotation
         GetComponent<PlanetMaker> ().SaveOBJ (planetName.text);
         //GetComponent<PlanetMaker> ().SaveCubemapTexture (p, planetName.text, 256);
+        GameObject.Find ("PlanetParent").transform.rotation = q;
     }
 
     public void AddNoiseLayer () {

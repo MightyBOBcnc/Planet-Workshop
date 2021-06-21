@@ -21,7 +21,7 @@ public class SaveLoadManager : MonoBehaviour
                 case RuntimePlatform.WindowsEditor:
                     return Application.dataPath.Replace ("/Assets", "/Saves");
                 default:
-                    return Application.dataPath + "/Saves";
+                    return Application.dataPath.Replace ("/Planet Workshop_Data", "/Saves");
             }
         }
     }
@@ -32,6 +32,9 @@ public class SaveLoadManager : MonoBehaviour
     }
 
     public void Save () {
+
+        if (!Directory.Exists (directory)) Directory.CreateDirectory (directory);
+
         string dir = directory + "/" + planetName.text + ".pws";
         StringBuilder file = new StringBuilder ();
 
@@ -71,6 +74,9 @@ public class SaveLoadManager : MonoBehaviour
     }
 
     public void Load (string filename) {
+
+        if (!Directory.Exists (directory)) Directory.CreateDirectory (directory);
+
         string dir = directory + "/" + filename; // extension included
 
         planetName.text = filename.Split ('.')[0]; // put the file name minus extension in the input field to allow easy updates

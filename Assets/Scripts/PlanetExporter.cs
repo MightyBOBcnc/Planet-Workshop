@@ -29,7 +29,7 @@ public class PlanetExporter {
             }
         }
 
-        string path = Application.dataPath + "/" + name + "_mesh.obj";
+        string path = Application.dataPath.Replace("Planet Workshop_Data", "Saves") + "/" + name + "_mesh.obj";
 
         File.WriteAllText (path, obj.ToString());
     }
