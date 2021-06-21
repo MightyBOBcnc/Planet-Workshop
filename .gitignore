@@ -35,3 +35,6 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# Big files
+Promotional/Logo/LogoPlanet_mesh.obj
