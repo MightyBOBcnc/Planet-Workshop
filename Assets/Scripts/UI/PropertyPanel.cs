@@ -17,7 +17,8 @@ public class PropertyPanel : MonoBehaviour
     public bool integer = false;
 
     private void Start () {
-        value = defaultValue;
+        if (value == float.MaxValue)
+            value = defaultValue;
         maxDeltaPerTick = (valueMinMax.y - valueMinMax.x) * Time.fixedDeltaTime / 3f; // (value range) * (delta time) / (seconds for full deflection)
         inputField.text = "" + value;
     }
@@ -27,7 +28,7 @@ public class PropertyPanel : MonoBehaviour
         if (slider.value != 0) {
             value += slider.value * maxDeltaPerTick;
             value = Mathf.Clamp (value, valueMinMax.x, valueMinMax.y);
-            inputField.text = value.ToString (!integer?"F2":"F0");
+            inputField.text = value.ToString (!integer?"F3":"F0");
         }
 
         if (!integer) {
@@ -43,7 +44,7 @@ public class PropertyPanel : MonoBehaviour
         }
     }
 
-    public float GetValue () => (value != float.MaxValue) ? value : defaultValue;
+    public float GetValue () => (value != float.MaxValue) ? (integer ? Mathf.RoundToInt(value) : value) : defaultValue;
 
     public void SetValue (float v) {
         value = v;

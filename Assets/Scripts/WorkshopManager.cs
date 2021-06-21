@@ -13,6 +13,8 @@ public class WorkshopManager : MonoBehaviour
     [Header("Planet Options")]
     public PropertyPanel radiusPanel;
     public SimpleProperty resolutionPanel;
+    public InputField seed;
+    public Toggle randomiseSeed;
 
     // NOISE
     [Header("Noise Options")]
@@ -50,6 +52,8 @@ public class WorkshopManager : MonoBehaviour
     PlanetOptions p;
 
     private void Start () {
+        System.Random seedInitialiser = new System.Random ();
+        Random.InitState (seedInitialiser.Next (-10000, 10000));
         UpdatePlanet ();
     }
 
@@ -63,6 +67,10 @@ public class WorkshopManager : MonoBehaviour
         if (GameObject.Find ("PlanetParent") != null)
             Destroy (GameObject.Find ("PlanetParent"));
 
+        if(randomiseSeed.isOn) {
+            seed.text = "Random " + Random.Range (-10000f, 10000f);
+        }
+
         CreatePlanetOptions ();
 
         GetComponent<PlanetMaker> ().CreatePlanet (p);
@@ -74,7 +82,8 @@ public class WorkshopManager : MonoBehaviour
         p.resolution = (int)resolutionPanel.GetValue();
         p.radius = radiusPanel.GetValue ();
         p.material = planetMaterial;
-        p.seed = Random.Range (-10000f, 10000f);
+        p.seed = SeedHash(seed.text);
+        print (p.seed);
 
         // NOISE
         p.layers = new NoiseLayer[noiseLayerPanels.Count];
@@ -104,6 +113,7 @@ public class WorkshopManager : MonoBehaviour
         // CRATERS
         p.craterDepth = craterDepthPanel.GetValue ();
         p.craters = new Crater[(int) numCratersPanel.GetValue ()];
+        Random.InitState ((int) (p.seed * 1000f));
         for (int i = 0; i < p.craters.Length; i++) {
             p.craters[i] = new Crater (Random.onUnitSphere * p.radius, craterMaxSizePanel.GetValue ());
         }
@@ -146,6 +156,10 @@ public class WorkshopManager : MonoBehaviour
     IEnumerator RebuildPoppableNextFrame (Poppable p) {
         yield return new WaitForEndOfFrame ();
         p.Rebuild ();
+    }
+
+    public static float SeedHash (string s) {
+        return (System.BitConverter.ToInt32 (System.Security.Cryptography.MD5.Create ().ComputeHash (System.Text.Encoding.UTF8.GetBytes (s)), 0)) / 1000f % 10000f;
     }
 }
 

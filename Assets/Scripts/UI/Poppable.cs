@@ -8,9 +8,12 @@ public class Poppable : MonoBehaviour {
     public Image arrowIcon;
     public RectTransform popContent;
 
+    public UnityEngine.Events.UnityEvent PopOutAction;
+
     public void PopOut () {
         popContent.gameObject.SetActive (true);
         arrowIcon.rectTransform.eulerAngles = Vector3.zero;
+        PopOutAction.Invoke ();
         Rebuild ();
     }
 
@@ -30,9 +33,14 @@ public class Poppable : MonoBehaviour {
         if (popContent.transform.parent.parent.name == "ManagementScrollContent") {
             LayoutRebuilder.ForceRebuildLayoutImmediate (popContent.transform.parent.parent.GetComponent<RectTransform> ());
         } else {
-            for (int i = 0; i < 2; i++) {
+            if (popContent.transform.parent.parent.parent.GetComponent<Poppable> () != null) {
+                for (int i = 0; i < 2; i++) {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate (popContent.transform.parent.parent.GetComponent<RectTransform> ());
+                    popContent.transform.parent.parent.parent.GetComponent<Poppable> ().Rebuild ();
+                }
+            }
+            if(popContent.transform.parent.parent.GetComponent<LayoutGroup>() != null) {
                 LayoutRebuilder.ForceRebuildLayoutImmediate (popContent.transform.parent.parent.GetComponent<RectTransform> ());
-                popContent.transform.parent.parent.parent.GetComponent<Poppable> ().Rebuild ();
             }
         }
         //if (popContent.transform.parent.parent.parent.GetComponent<Poppable> () != null) popContent.transform.parent.parent.parent.GetComponent<Poppable> ().Rebuild ();

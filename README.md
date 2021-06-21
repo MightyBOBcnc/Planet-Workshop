@@ -25,8 +25,8 @@ Heightmap and texture:<br>
 - [x] Mixing between randomised and altitude-based colour maps
 - [x] Colour affected by crater presence
 - [x] Masks for noise and colour maps
-- [ ] Save and load in a native format
-- [ ] Control over random seed to allow full functionality of save/load
+- [x] Save and load in a native format
+- [x] Control over random seed to allow full functionality of save/load
 - [ ] Gradient colour picker for altitude
 - [ ] Noise height curves for more varied surface
 - [ ] Latitude-based colouring (ice caps, etc)
