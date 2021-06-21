@@ -13556,6 +13556,7 @@ MonoBehaviour:
   heightmapResolutionPanel: {fileID: 1411249972}
   textureResolutionPanel: {fileID: 1359847313}
   planetName: {fileID: 860211210}
+  randomWords: {fileID: 4900000, guid: e960334198503d34998d4fdf3cc85e54, type: 3}
 --- !u!4 &924155678
 Transform:
   m_ObjectHideFlags: 0
@@ -18852,7 +18853,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6275291171075575099, guid: 8eef3e74b80f44d40a09e91cab81829a, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 630
       objectReference: {fileID: 0}
     - target: {fileID: 6275291171075575099, guid: 8eef3e74b80f44d40a09e91cab81829a, type: 3}
       propertyPath: m_SizeDelta.y
@@ -18888,7 +18889,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6275291171075575099, guid: 8eef3e74b80f44d40a09e91cab81829a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 325
       objectReference: {fileID: 0}
     - target: {fileID: 6275291171075575099, guid: 8eef3e74b80f44d40a09e91cab81829a, type: 3}
       propertyPath: m_AnchoredPosition.y

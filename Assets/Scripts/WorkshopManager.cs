@@ -49,10 +49,18 @@ public class WorkshopManager : MonoBehaviour
     public SimpleProperty textureResolutionPanel;
     public InputField planetName;
 
+    [Header ("Miscellaneous")]
+    public TextAsset randomWords;
+    string[] words;
+
     PlanetOptions p;
+    System.Random seedInitialiser;
 
     private void Start () {
-        System.Random seedInitialiser = new System.Random ();
+
+        words = randomWords.text.Split ('\n');
+
+        seedInitialiser = new System.Random ();
         Random.InitState (seedInitialiser.Next (-10000, 10000));
         UpdatePlanet ();
     }
@@ -68,7 +76,7 @@ public class WorkshopManager : MonoBehaviour
             Destroy (GameObject.Find ("PlanetParent"));
 
         if(randomiseSeed.isOn) {
-            seed.text = "Random " + Random.Range (-10000f, 10000f);
+            seed.text = RandomSeed ();
         }
 
         CreatePlanetOptions ();
@@ -160,6 +168,17 @@ public class WorkshopManager : MonoBehaviour
 
     public static float SeedHash (string s) {
         return (System.BitConverter.ToInt32 (System.Security.Cryptography.MD5.Create ().ComputeHash (System.Text.Encoding.UTF8.GetBytes (s)), 0)) / 1000f % 10000f;
+    }
+
+    public string RandomSeed () {
+        string seed = "";
+        while (seed.Length < 13) {
+            seed += words[seedInitialiser.Next(0, words.Length - 1)];
+        }
+        while(seed.Length < 16) {
+            seed += Random.Range (0, 9);
+        }
+        return seed;
     }
 }
 
