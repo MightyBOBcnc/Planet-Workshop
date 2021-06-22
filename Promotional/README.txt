@@ -30,6 +30,11 @@ TO SAVE YOUR WORK AS A PROJECT:
 TO LOAD A SAVED PROJECT:
 	- Click "Load Planet" in the left-side menu to open the load dropdown
 	- Select the planet to load from the list (you may need to scroll down)
+	
+TO ACCESS SAVED AND EXPORTED FILES:
+	- Saves are located in /Saves
+	- Exported files are located in /Exports
+	- Note that it is not advisable to modify save files outside of the editor or the planet may not load properly
 
 OPTIONS:
 	LEFT-SIDE MENU:
