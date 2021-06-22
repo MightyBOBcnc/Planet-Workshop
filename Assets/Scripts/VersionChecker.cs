@@ -7,7 +7,7 @@ public class VersionChecker : MonoBehaviour
 {
     public static string path = "https://raw.githubusercontent.com/carlpilot/Planet-Workshop/main/version.txt";
 
-    public static string CurrentVersion = "0";
+    public static string CurrentVersion = "1";
 
     public GameObject newVersionNotification;
     public Text newVersionMessage;
