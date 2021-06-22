@@ -1,2 +1,5 @@
 1
 There's a new version of Planet Workshop available. Download it from github.com/carlpilot/Planet-Workshop or carlpilot.itch.io/planetworkshop
+Are multiple lines supported?
+Yes?
+No?
