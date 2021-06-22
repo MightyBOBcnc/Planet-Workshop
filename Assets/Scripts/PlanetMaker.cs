@@ -325,7 +325,7 @@ public class PlanetMaker : MonoBehaviour {
         float gradientBlendingNoise = scaleOctaveNoise (point3d * 0.5f - Vector3.right * p.seed, p.colourScale * p.radius, p.colourOctaves) * p.gradientBlendingNoise;
         Color finalSurfaceColour = Color.Lerp (randomColour, heightColour, p.gradientBlending + gradientBlendingNoise / (2f * p.gradientBlendingNoiseSmoothness + 0.01f));
 
-        float craterContribution = p.craterColouring * /*Mathf.Clamp01*/ (-0.8f + 2f * SampleCraterMap (point3d.x, point3d.y, point3d.z, p) / -3f);
+        float craterContribution = p.craterColouring * /*Mathf.Clamp01*/ (-2.7f + 6f * SampleCraterMap (point3d.x, point3d.y, point3d.z, p) / -3f);
         Color finalColour = Color.Lerp (finalSurfaceColour, p.colCrater, craterContribution);
 
         return finalColour;//Color.Lerp (randomColour, heightColour, p.gradientBlending);
@@ -363,11 +363,11 @@ public class PlanetMaker : MonoBehaviour {
 
     float LayerWorldHeight (Vector3 x, PlanetOptions p) => LayerWorldHeight (x.x, x.y, x.z, p);
 
-    static float noisef (float x, float y) => Mathf.PerlinNoise (x, y);
+    // static float noisef (float x, float y) => Mathf.PerlinNoise (x, y);
 
     static float noisef (float x, float y, float z) => Perlin.Noise (x + Perlin.Noise(x, y, z), y + Perlin.Noise (x, y, z), z + Perlin.Noise (x, y, z));
 
-    static float noisef (Vector3 v) => noisef (v.x, v.y, v.z);
+    // static float noisef (Vector3 v) => noisef (v.x, v.y, v.z);
 
     static float scaleNoise (Vector3 p, float scale) => noisef (p.x / scale, p.y / scale, p.z / scale);
 

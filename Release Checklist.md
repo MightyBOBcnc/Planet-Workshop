@@ -8,6 +8,7 @@
 [x] Windows, Win64, Mac and Linux versions built
 [x] Readme updated (with changelog)
 [x] Readme included with all builds
+[x] Licence included with all builds
 
 # POST-BUILD TASKS
 [x] Git pushed

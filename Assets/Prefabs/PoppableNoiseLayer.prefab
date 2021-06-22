@@ -1917,6 +1917,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arrowIcon: {fileID: 7579939950997061071}
   popContent: {fileID: 7579939950902205686}
+  PopOutAction:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &2554892225025904555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3413,7 +3416,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultValue: 5
-  valueMinMax: {x: 0.1, y: 10}
+  valueMinMax: {x: 0.1, y: 25}
   slider: {fileID: 7579939951228738719}
   inputField: {fileID: 7579939952278935766}
   integer: 0
@@ -4461,7 +4464,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultValue: 0.2
-  valueMinMax: {x: 0, y: 1}
+  valueMinMax: {x: 0, y: 2}
   slider: {fileID: 7579939950499879030}
   inputField: {fileID: 7579939951135373717}
   integer: 0

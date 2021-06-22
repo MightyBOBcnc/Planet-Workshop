@@ -4,6 +4,9 @@
 For most up-to-date information, check the GitHub page:
 https://github.com/carlpilot/Planet-Workshop
 
+Updates and downloads available on Itch.io:
+https://carlpilot.itch.io/planet-workshop
+
 TO EDIT THE PLANET:
 	- See the Options descriptions below for more detail on each individual option.
 	- After making changes, click Update Planet to refresh the planet including the new changes
@@ -122,7 +125,17 @@ OPTIONS:
 			EXPORT PLANET MESH:
 				Export the 3D model of the planet AS OF THE LAST UPDATE
 				(Will not take into account any non-Updated changes)
+			PLAIN EDITOR BACKGROUND:
+				Whether or not to set the editor background to pure black for ease of screenshots
 
 CHANGELOG:
 	v1:
 		- Initial release
+
+LICENSING:
+	LICENCE OF SOURCE CODE:
+		- Apache licence: https://github.com/carlpilot/Planet-Workshop/blob/main/LICENCE.md
+		- See included LICENCE.md file for full details or check the GitHub
+	LICENCE OF FILES (planets, saves, etc) CREATED WITH PLANET WORKSHOP:
+		- http://www.wtfpl.net/about/
+		- No restrictions. Do whatever you please with files, including redistribution/commercial use.

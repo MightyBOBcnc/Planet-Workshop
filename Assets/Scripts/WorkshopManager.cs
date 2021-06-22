@@ -48,6 +48,7 @@ public class WorkshopManager : MonoBehaviour
     public SimpleProperty heightmapResolutionPanel;
     public SimpleProperty textureResolutionPanel;
     public InputField planetName;
+    public Toggle plainBackground;
 
     [Header ("Miscellaneous")]
     public TextAsset randomWords;
@@ -69,6 +70,8 @@ public class WorkshopManager : MonoBehaviour
         // Keep these updating since we want any exports to reflect these values (not the values at last planet generation)
         p.texRes = (int) textureResolutionPanel.GetValue ();
         p.hgtRes = (int) heightmapResolutionPanel.GetValue ();
+
+        Camera.main.clearFlags = plainBackground.isOn ? CameraClearFlags.SolidColor : CameraClearFlags.Skybox;
     }
 
     public void UpdatePlanet () {
